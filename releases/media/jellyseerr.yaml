@@ -1,7 +1,7 @@
 releases:
-  - name: jellyseerr
+  - name: seerr
     namespace: media
     chart: bjw-s/app-template
     version: "3.5.1"
     values:
-      - ../../values/jellyseerr/values.yaml
+      - ../../values/seerr/values.yaml

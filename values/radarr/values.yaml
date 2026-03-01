@@ -32,12 +32,32 @@ persistence:
     size: 2Gi
     globalMounts:
       - path: /config
-  movies:
+  # Single shared NFS PVC — same filesystem as downloads enables hardlinks
+  data:
     type: persistentVolumeClaim
-    existingClaim: media-movies-pvc
+    existingClaim: media-data-pvc
     globalMounts:
-      - path: /movies
+      - path: /data
 
 ingress:
   app:
-    enabled: false
+    enabled: true
+    className: caddy
+    annotations:
+      # Authentik forward auth — internal auth is disabled on this service.
+      # The same snippet is used on sonarr, prowlarr and qbittorrent.
+      # If the Authentik outpost URL changes, update all four services.
+      caddy.ingress.kubernetes.io/server-snippet: |
+        forward_auth http://authentik-server.auth.svc.cluster.local:9000 {
+          uri /outpost.goauthentik.io/auth/caddy
+          copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Email X-Authentik-Uid X-Authentik-Jwt X-Authentik-Meta-jwks X-Authentik-Meta-outpost X-Authentik-Meta-provider X-Authentik-Meta-app X-Authentik-Meta-version
+          @goauthentik_proxy_response status 401
+          handle @goauthentik_proxy_response {
+            redir * /outpost.goauthentik.io/start?rd={http.request.uri}
+          }
+        }
+    hosts:
+      - host: "radarr.{{ requiredEnv \"DOMAIN\" }}"
+        paths:
+          - path: /
+            pathType: Prefix

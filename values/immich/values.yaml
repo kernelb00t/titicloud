@@ -17,7 +17,15 @@ env:
 
 ingress:
   main:
-    enabled: false
+    enabled: true
+    className: caddy
+    annotations: {}
+    hosts:
+      - host: "photos.{{ requiredEnv \"DOMAIN\" }}"
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: []
 
 server:
   resources:
@@ -48,7 +56,9 @@ machine-learning:
       memory: 4Gi
   persistence:
     cache:
-      existingClaim: immich-ml-cache-pvc
+      # ML model cache stored on SSD for speed; excluded from Velero but NOT on NFS
+      storageClass: local-config
+      size: 10Gi
 
 redis:
   enabled: true

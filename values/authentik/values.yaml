@@ -10,7 +10,15 @@ global:
 
 server:
   ingress:
-    enabled: false
+    enabled: true
+    ingressClassName: caddy
+    annotations: {}
+    hosts:
+      - host: "auth.{{ requiredEnv \"DOMAIN\" }}"
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: []
   resources:
     requests:
       cpu: 200m

@@ -1,0 +1,44 @@
+controllers:
+  seerr:
+    containers:
+      app:
+        image:
+          repository: fallenbagel/jellyseerr
+          tag: "2.1.0"
+        env:
+          LOG_LEVEL: info
+          TZ: Europe/Paris
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+
+service:
+  app:
+    controller: seerr
+    ports:
+      http:
+        port: 5055
+
+persistence:
+  config:
+    type: persistentVolumeClaim
+    storageClass: local-config
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    globalMounts:
+      - path: /app/config
+
+ingress:
+  app:
+    enabled: true
+    className: caddy
+    annotations: {}
+    hosts:
+      - host: "seerr.{{ requiredEnv \"DOMAIN\" }}"
+        paths:
+          - path: /
+            pathType: Prefix

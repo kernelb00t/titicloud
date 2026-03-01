@@ -1,11 +1,24 @@
 # PVCs for media/photos services using nfs-media StorageClass
 # These PVCs are excluded from Velero backups (large media files)
 # Format: bjw-s/raw chart resources list
+#
+# Directory layout expected on NFS (configure on Synology before first deploy):
+#   /data/torrents/   ← qBittorrent downloads
+#   /data/movies/     ← Radarr library  (configure as root folder in Radarr UI)
+#   /data/tv/         ← Sonarr library  (configure as root folder in Sonarr UI)
+#
+# Jellyfin mounts the same media-data-pvc at /media (chart default), so its
+# library paths are /media/movies and /media/tv — configure these in the Jellyfin UI.
+#
+# Hardlinks work because *arr, qBittorrent and Jellyfin all use the same underlying
+# NFS filesystem (media-data-pvc). The mount path per container is irrelevant for
+# hardlink support; only the filesystem identity matters.
 resources:
+  # Single shared NFS claim for all media + downloads (hardlink support)
   - apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
-      name: jellyfin-media-pvc
+      name: media-data-pvc
       namespace: media
       annotations:
         velero.io/exclude-from-backup: "true"
@@ -15,7 +28,7 @@ resources:
       storageClassName: nfs-media
       resources:
         requests:
-          storage: 500Gi
+          storage: 1Ti
 
   - apiVersion: v1
     kind: PersistentVolumeClaim
@@ -31,63 +44,3 @@ resources:
       resources:
         requests:
           storage: 500Gi
-
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      name: immich-ml-cache-pvc
-      namespace: photos
-      annotations:
-        velero.io/exclude-from-backup: "true"
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      storageClassName: nfs-media
-      resources:
-        requests:
-          storage: 10Gi
-
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      name: qbittorrent-downloads-pvc
-      namespace: media
-      annotations:
-        velero.io/exclude-from-backup: "true"
-    spec:
-      accessModes:
-        - ReadWriteMany
-      storageClassName: nfs-media
-      resources:
-        requests:
-          storage: 200Gi
-
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      name: media-movies-pvc
-      namespace: media
-      annotations:
-        velero.io/exclude-from-backup: "true"
-    spec:
-      accessModes:
-        - ReadWriteMany
-      storageClassName: nfs-media
-      resources:
-        requests:
-          storage: 300Gi
-
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
-    metadata:
-      name: media-tv-pvc
-      namespace: media
-      annotations:
-        velero.io/exclude-from-backup: "true"
-    spec:
-      accessModes:
-        - ReadWriteMany
-      storageClassName: nfs-media
-      resources:
-        requests:
-          storage: 300Gi

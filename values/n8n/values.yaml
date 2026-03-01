@@ -42,4 +42,11 @@ persistence:
 
 ingress:
   app:
-    enabled: false
+    enabled: true
+    className: caddy
+    annotations: {}
+    hosts:
+      - host: "n8n.{{ requiredEnv \"DOMAIN\" }}"
+        paths:
+          - path: /
+            pathType: Prefix

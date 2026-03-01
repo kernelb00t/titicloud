@@ -8,7 +8,6 @@ controllers:
         env:
           ADMIN_TOKEN: "{{ requiredEnv \"VAULTWARDEN_ADMIN_TOKEN\" }}"
           DOMAIN: "https://vault.{{ requiredEnv \"DOMAIN\" }}"
-          WEBSOCKET_ENABLED: "true"
           SIGNUPS_ALLOWED: "false"
         resources:
           requests:
@@ -24,8 +23,6 @@ service:
     ports:
       http:
         port: 80
-      websocket:
-        port: 3012
 
 persistence:
   data:
@@ -38,4 +35,11 @@ persistence:
 
 ingress:
   app:
-    enabled: false
+    enabled: true
+    className: caddy
+    annotations: {}
+    hosts:
+      - host: "vault.{{ requiredEnv \"DOMAIN\" }}"
+        paths:
+          - path: /
+            pathType: Prefix

@@ -27,6 +27,8 @@ repositories:
     url: https://bjw-s.github.io/helm-charts
   - name: jellyfin
     url: https://jellyfin.github.io/jellyfin-helm
+  - name: caddy
+    url: https://caddyserver.github.io/ingress/
 
 helmfiles:
   # 1. Infrastructure operators (order matters)

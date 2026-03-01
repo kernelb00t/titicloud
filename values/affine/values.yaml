@@ -26,4 +26,11 @@ service:
 
 ingress:
   app:
-    enabled: false
+    enabled: true
+    className: caddy
+    annotations: {}
+    hosts:
+      - host: "affine.{{ requiredEnv \"DOMAIN\" }}"
+        paths:
+          - path: /
+            pathType: Prefix
