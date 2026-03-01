@@ -33,7 +33,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/linuxserver/qbittorrent
-          tag: "latest"
+          tag: "5.0.3"
         env:
           PUID: "1000"
           PGID: "1000"

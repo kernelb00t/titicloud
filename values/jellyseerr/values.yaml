@@ -4,7 +4,7 @@ controllers:
       app:
         image:
           repository: fallenbagel/jellyseerr
-          tag: "latest"
+          tag: "2.1.0"
         env:
           LOG_LEVEL: info
           TZ: Europe/Paris

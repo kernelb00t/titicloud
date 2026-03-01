@@ -4,7 +4,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/linuxserver/radarr
-          tag: "latest"
+          tag: "5.12.2"
         env:
           PUID: "1000"
           PGID: "1000"

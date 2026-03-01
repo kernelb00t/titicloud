@@ -4,7 +4,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/linuxserver/prowlarr
-          tag: "latest"
+          tag: "1.25.4"
         env:
           PUID: "1000"
           PGID: "1000"
