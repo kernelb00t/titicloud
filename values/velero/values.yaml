@@ -1,0 +1,68 @@
+initContainers:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:v1.10.1
+    volumeMounts:
+      - mountPath: /target
+        name: plugins
+
+configuration:
+  features: EnableCSI
+  uploaderType: kopia
+  backupStorageLocation:
+    - name: default
+      provider: aws
+      bucket: velero-backups
+      config:
+        region: minio
+        s3ForcePathStyle: "true"
+        s3Url: "http://{{ requiredEnv \"MINIO_HOST\" }}:9000"
+  volumeSnapshotLocation:
+    - name: default
+      provider: aws
+      config:
+        region: minio
+
+credentials:
+  useSecret: true
+  secretContents:
+    cloud: |
+      [default]
+      aws_access_key_id={{ requiredEnv "MINIO_ACCESS_KEY" }}
+      aws_secret_access_key={{ requiredEnv "MINIO_SECRET_KEY" }}
+
+deployNodeAgent: true
+
+schedules:
+  daily-backup:
+    disabled: false
+    schedule: "0 2 * * *"
+    useOwnerReferencesInBackup: false
+    template:
+      ttl: "720h"
+      includedNamespaces:
+        - "*"
+      excludedNamespaces:
+        - kube-system
+        - velero
+      snapshotVolumes: true
+      labelSelector:
+        matchExpressions:
+          - key: velero.io/exclude-from-backup
+            operator: DoesNotExist
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+nodeAgent:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi

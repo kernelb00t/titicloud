@@ -1,0 +1,7 @@
+releases:
+  - name: affine-db
+    namespace: productivity
+    chart: cnpg/cluster
+    version: "0.2.1"
+    values:
+      - ../../values/affine-db/values.yaml

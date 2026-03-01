@@ -1,0 +1,13 @@
+releases:
+  - name: snapshot-controller
+    namespace: kube-system
+    chart: piraeus/snapshot-controller
+    version: "2.2.0"
+    values:
+      - resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi

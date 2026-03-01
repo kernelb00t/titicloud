@@ -1,0 +1,38 @@
+controllers:
+  prowlarr:
+    containers:
+      app:
+        image:
+          repository: ghcr.io/linuxserver/prowlarr
+          tag: "latest"
+        env:
+          PUID: "1000"
+          PGID: "1000"
+          TZ: Europe/Paris
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 300m
+            memory: 256Mi
+
+service:
+  app:
+    controller: prowlarr
+    ports:
+      http:
+        port: 9696
+
+persistence:
+  config:
+    type: persistentVolumeClaim
+    storageClass: local-config
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    globalMounts:
+      - path: /config
+
+ingress:
+  app:
+    enabled: false

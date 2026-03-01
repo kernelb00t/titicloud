@@ -1,0 +1,7 @@
+releases:
+  - name: caddy
+    namespace: caddy
+    chart: bjw-s/app-template
+    version: "3.5.1"
+    values:
+      - ../../values/caddy/values.yaml

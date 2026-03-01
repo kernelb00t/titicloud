@@ -1,0 +1,122 @@
+controllers:
+  caddy:
+    containers:
+      app:
+        image:
+          repository: caddy
+          tag: "2.8.4-alpine"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+        env:
+          ACME_EMAIL:
+            valueFrom:
+              secretKeyRef:
+                name: caddy-secrets
+                key: acme-email
+
+service:
+  app:
+    controller: caddy
+    type: ClusterIP
+    ports:
+      http:
+        port: 80
+      https:
+        port: 443
+
+configMaps:
+  caddyfile:
+    data:
+      Caddyfile: |
+        {
+          email {$ACME_EMAIL}
+          admin off
+        }
+
+        # Authentik
+        auth.{$DOMAIN} {
+          reverse_proxy authentik.auth.svc.cluster.local:80
+        }
+
+        # Immich
+        photos.{$DOMAIN} {
+          reverse_proxy immich-server.photos.svc.cluster.local:3001
+        }
+
+        # Affine
+        affine.{$DOMAIN} {
+          reverse_proxy affine.productivity.svc.cluster.local:3010
+        }
+
+        # N8N
+        n8n.{$DOMAIN} {
+          reverse_proxy n8n.productivity.svc.cluster.local:5678
+        }
+
+        # Vaultwarden
+        vault.{$DOMAIN} {
+          reverse_proxy vaultwarden.productivity.svc.cluster.local:80
+        }
+
+        # Jellyfin
+        jellyfin.{$DOMAIN} {
+          reverse_proxy jellyfin.media.svc.cluster.local:8096
+        }
+
+        # Jellyseerr
+        jellyseerr.{$DOMAIN} {
+          reverse_proxy jellyseerr.media.svc.cluster.local:5055
+        }
+
+        # qBittorrent
+        qbittorrent.{$DOMAIN} {
+          reverse_proxy qbittorrent.media.svc.cluster.local:8080
+        }
+
+        # Radarr
+        radarr.{$DOMAIN} {
+          reverse_proxy radarr.media.svc.cluster.local:7878
+        }
+
+        # Sonarr
+        sonarr.{$DOMAIN} {
+          reverse_proxy sonarr.media.svc.cluster.local:8989
+        }
+
+        # Prowlarr
+        prowlarr.{$DOMAIN} {
+          reverse_proxy prowlarr.media.svc.cluster.local:9696
+        }
+
+        # Flaresolverr
+        flaresolverr.{$DOMAIN} {
+          reverse_proxy flaresolverr.media.svc.cluster.local:8191
+        }
+
+persistence:
+  caddyfile:
+    type: configMap
+    name: caddy-caddyfile
+    globalMounts:
+      - path: /etc/caddy/Caddyfile
+        subPath: Caddyfile
+  caddy-data:
+    type: persistentVolumeClaim
+    storageClass: local-config
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    globalMounts:
+      - path: /data
+  caddy-config:
+    type: emptyDir
+    globalMounts:
+      - path: /config
+
+defaultPodOptions:
+  hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet

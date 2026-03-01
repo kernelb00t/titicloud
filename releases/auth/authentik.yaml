@@ -1,0 +1,7 @@
+releases:
+  - name: authentik
+    namespace: auth
+    chart: goauthentik/authentik
+    version: "2024.10.4"
+    values:
+      - ../../values/authentik/values.yaml

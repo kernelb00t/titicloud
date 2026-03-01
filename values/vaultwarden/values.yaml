@@ -1,0 +1,41 @@
+controllers:
+  vaultwarden:
+    containers:
+      app:
+        image:
+          repository: vaultwarden/server
+          tag: "1.32.7-alpine"
+        env:
+          ADMIN_TOKEN: "{{ requiredEnv \"VAULTWARDEN_ADMIN_TOKEN\" }}"
+          DOMAIN: "https://vault.{{ requiredEnv \"DOMAIN\" }}"
+          WEBSOCKET_ENABLED: "true"
+          SIGNUPS_ALLOWED: "false"
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+
+service:
+  app:
+    controller: vaultwarden
+    ports:
+      http:
+        port: 80
+      websocket:
+        port: 3012
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    storageClass: local-config
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    globalMounts:
+      - path: /data
+
+ingress:
+  app:
+    enabled: false

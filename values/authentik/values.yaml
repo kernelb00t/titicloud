@@ -1,0 +1,43 @@
+global:
+  image:
+    tag: "2024.10.4"
+  env:
+    AUTHENTIK_SECRET_KEY: "{{ requiredEnv \"AUTHENTIK_SECRET_KEY\" }}"
+    AUTHENTIK_POSTGRESQL__HOST: "{{ requiredEnv \"AUTHENTIK_DB_HOST\" }}"
+    AUTHENTIK_POSTGRESQL__NAME: authentik
+    AUTHENTIK_POSTGRESQL__USER: authentik
+    AUTHENTIK_POSTGRESQL__PASSWORD: "{{ requiredEnv \"AUTHENTIK_DB_PASSWORD\" }}"
+
+server:
+  ingress:
+    enabled: false
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+worker:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+postgresql:
+  enabled: false
+
+redis:
+  enabled: true
+  master:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi

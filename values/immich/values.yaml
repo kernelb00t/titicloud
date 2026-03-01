@@ -1,0 +1,65 @@
+image:
+  tag: "v1.120.2"
+
+immich:
+  metrics:
+    enabled: false
+  persistence:
+    library:
+      existingClaim: immich-library-pvc
+
+env:
+  DB_HOSTNAME: "{{ requiredEnv \"IMMICH_DB_HOST\" }}"
+  DB_DATABASE_NAME: immich
+  DB_USERNAME: immich
+  DB_PASSWORD: "{{ requiredEnv \"IMMICH_DB_PASSWORD\" }}"
+  REDIS_HOSTNAME: immich-redis-master
+
+ingress:
+  main:
+    enabled: false
+
+server:
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+
+microservices:
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+
+machine-learning:
+  enabled: true
+  resources:
+    requests:
+      cpu: 200m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+  persistence:
+    cache:
+      existingClaim: immich-ml-cache-pvc
+
+redis:
+  enabled: true
+  master:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
+
+postgresql:
+  enabled: false

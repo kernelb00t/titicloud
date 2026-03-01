@@ -1,0 +1,49 @@
+cluster:
+  name: affine-db
+  instances: 1
+
+  storage:
+    size: 5Gi
+    storageClass: local-config
+
+  postgresql:
+    parameters:
+      max_connections: "100"
+      shared_buffers: 128MB
+
+  bootstrap:
+    initdb:
+      database: affine
+      owner: affine
+      secret:
+        name: affine-db-secret
+
+  backup:
+    retentionPolicy: "30d"
+    barmanObjectStore:
+      endpointURL: "http://{{ requiredEnv \"MINIO_HOST\" }}:9000"
+      destinationPath: "s3://cnpg-backups/affine/"
+      s3Credentials:
+        accessKeyId:
+          name: cnpg-minio-secret
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: cnpg-minio-secret
+          key: ACCESS_SECRET_KEY
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+
+  scheduledBackup:
+    - name: affine-db-daily
+      schedule: "0 3 * * *"
+      backupOwnerReference: self
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

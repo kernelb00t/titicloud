@@ -1,0 +1,43 @@
+controllers:
+  sonarr:
+    containers:
+      app:
+        image:
+          repository: ghcr.io/linuxserver/sonarr
+          tag: "latest"
+        env:
+          PUID: "1000"
+          PGID: "1000"
+          TZ: Europe/Paris
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+
+service:
+  app:
+    controller: sonarr
+    ports:
+      http:
+        port: 8989
+
+persistence:
+  config:
+    type: persistentVolumeClaim
+    storageClass: local-config
+    accessMode: ReadWriteOnce
+    size: 2Gi
+    globalMounts:
+      - path: /config
+  tv:
+    type: persistentVolumeClaim
+    existingClaim: media-tv-pvc
+    globalMounts:
+      - path: /tv
+
+ingress:
+  app:
+    enabled: false

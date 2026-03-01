@@ -1,0 +1,43 @@
+controllers:
+  radarr:
+    containers:
+      app:
+        image:
+          repository: ghcr.io/linuxserver/radarr
+          tag: "latest"
+        env:
+          PUID: "1000"
+          PGID: "1000"
+          TZ: Europe/Paris
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+
+service:
+  app:
+    controller: radarr
+    ports:
+      http:
+        port: 7878
+
+persistence:
+  config:
+    type: persistentVolumeClaim
+    storageClass: local-config
+    accessMode: ReadWriteOnce
+    size: 2Gi
+    globalMounts:
+      - path: /config
+  movies:
+    type: persistentVolumeClaim
+    existingClaim: media-movies-pvc
+    globalMounts:
+      - path: /movies
+
+ingress:
+  app:
+    enabled: false
