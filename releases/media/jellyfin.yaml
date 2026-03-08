@@ -1,0 +1,7 @@
+releases:
+  - name: jellyfin
+    namespace: media
+    chart: jellyfin/jellyfin
+    version: "2.1.0"
+    values:
+      - ../../values/jellyfin/values.yaml

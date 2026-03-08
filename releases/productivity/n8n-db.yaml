@@ -1,0 +1,7 @@
+releases:
+  - name: n8n-db
+    namespace: productivity
+    chart: cnpg/cluster
+    version: "0.5.0"
+    values:
+      - ../../values/n8n-db/values.yaml

@@ -1,0 +1,7 @@
+releases:
+  - name: authentik-db
+    namespace: auth
+    chart: cnpg/cluster
+    version: "0.5.0"
+    values:
+      - ../../values/authentik-db/values.yaml

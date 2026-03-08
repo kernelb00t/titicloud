@@ -1,39 +1,159 @@
 # titiCloud
-Ce repo contient toutes les ressources nécessaires pour faire tourner titiCloud, le homelab des Thivillons.
 
-## Configuration VM Proxmox
-### 1. Préparer la VM (GUI ou CLI Proxmox)
-- OS : Linux 6.x Kernel (l'ISO NixOS Minimal convient parfaitement).
-- Système :
-  - Machine : q35
-  - BIOS : OVMF (UEFI)
-- Disque :
-  - Bus : SCSI avec contrôleur VirtIO SCSI Single
-  - Option Discard activée pour le TRIM de ton NVMe
-- CPU : Type host pour exploiter toutes les instructions du i5-1340P.
-- Réseau : Modèle VirtIO (paravirtualized).
+Helmfile repo for the Thivillon homelab — single-node k3s on an Intel NUC (13th gen i5), Synology NAS as NFS + MinIO, no GitOps, no MetalLB.
 
-### 2. Installation « Bootstrap »
-1. Démarre sur l'ISO NixOS Minimal.
-2. Partitionne le disque (schéma GPT/UEFI — 512 Mo pour EFI (`/boot`), le reste pour la racine (`/`)) :
-```bash
-parted /dev/sda -- mklabel gpt
-parted /dev/sda -- mkpart primary fat32 1MiB 512MiB
-parted /dev/sda -- set 1 esp on
-parted /dev/sda -- mkpart primary ext4 512MiB 100%
+## Architecture overview
+
 ```
-3. Formate et monte les partitions :
-```bash
-mkfs.fat -F 32 -n boot /dev/sda1
-mkfs.ext4 -L nixos /dev/sda2
-mount /dev/disk/by-label/nixos /mnt
-mkdir -p /mnt/boot
-mount /dev/disk/by-label/boot /mnt/boot
+NUC (k3s)
+  ├── Traefik (built-in)  — HTTPS ingress, Let's Encrypt ACME
+  ├── Authentik           — SSO / forward auth
+  ├── Immich              — photo library
+  ├── Affine + N8N        — productivity
+  ├── Vaultwarden         — passwords
+  ├── Jellyfin            — media server (Intel iGPU hardware transcode)
+  ├── Seerr               — media request portal
+  ├── Radarr / Sonarr / Prowlarr / qBittorrent — *arr stack (VPN via gluetun)
+  └── Velero              — backups to MinIO (NAS)
+
+Synology NAS
+  ├── NFS /volume1/media  — shared media-data-pvc (1Ti)
+  ├── NFS /volume1/cache  — Immich thumbnail cache
+  ├── MinIO               — velero-backups + cnpg-backups
+  └── CloudNativePG clusters write WAL to MinIO via Barman
 ```
-4. Génère la configuration de base :
+
+## Prerequisites — what must exist before `helmfile apply`
+
+### On the NUC host (Debian)
+- k3s installed: `curl -sfL https://get.k3s.io | sh -s - --disable servicelb`
+- `kubectl`, `helm`, `helmfile` available in PATH
+- Intel GPU drivers present: `apt install intel-media-va-driver-non-free vainfo`
+- Verify `/dev/dri/renderD128` exists; confirm group IDs match values in `values/jellyfin/values.yaml`
+  ```bash
+  stat -c "%g %n" /dev/dri/renderD128  # should be 105 (render) on Debian
+  stat -c "%g %n" /dev/dri/card0       # should be 44 (video)
+  ```
+
+### On the Synology NAS
+- NFS share `/volume1/media` exported and accessible from NUC
+- NFS share `/volume1/cache` exported and accessible from NUC
+- MinIO running and accessible at port 9000
+- Two MinIO buckets created **before** first deploy (names match your `.env`):
+  ```bash
+  mc alias set nas http://NAS_IP:9000 ACCESS_KEY SECRET_KEY
+  mc mb nas/velero-backups
+  mc mb nas/cnpg-backups
+  ```
+
+### Cluster-internal resources (created by Helmfile)
+Helmfile creates all namespaces automatically. The CNPG operator must be running before CNPG cluster releases are deployed — the `helmfile.yaml` order enforces this.
+
+## Non-standard configuration quirks
+
+| Config | Default assumed | What to change if different |
+|---|---|---|
+| Pod CIDR | `10.42.0.0/16` | `FIREWALL_OUTBOUND_SUBNETS` in `values/qbittorrent/values.yaml` |
+| Service CIDR | `10.43.0.0/16` | Same as above |
+| render group GID | `105` (Debian) | `supplementalGroups` in `values/jellyfin/values.yaml` |
+| video group GID | `44` | Same as above |
+| MinIO port | `9000` | `endpointURL` in all `values/*-db/values.yaml` and `values/velero/values.yaml` |
+| NFS media path | `/volume1/media` | `NFS_MEDIA_PATH` in `.env` |
+| NFS cache path | `/volume1/cache` | `NFS_CACHE_PATH` in `.env` |
+
+## Deployment
+
 ```bash
-nixos-generate-config --root /mnt
+# 1. Copy and fill in all variables
+cp .env.example .env
+$EDITOR .env
+
+# 2. Create MinIO buckets (see Prerequisites above)
+
+# 3. Deploy everything in order
+helmfile --environment homelab apply
+
+# 4. (First run only) Bootstrap Authentik admin user via the browser at https://auth.DOMAIN/if/flow/initial-setup/
 ```
-5. Active le SSH et crée ton utilisateur dans `/mnt/etc/nixos/configuration.nix`.
-   - Remarque : cette configuration sera remplacée par ta Flake juste après.
-6. Installe NixOS (`nixos-install`), puis redémarre.
+
+## Updating dependencies
+
+Helm chart versions and Docker image tags are managed by **Renovate Bot** (`renovate.json`). Renovate opens PRs automatically when new versions are available, covering:
+- All `releases/*/` Helmfile release files (chart versions)
+- All `values/*/values.yaml` files (Docker image tags)
+
+To enable Renovate, install the [Renovate GitHub App](https://github.com/apps/renovate) on this repository.
+
+For manual updates:
+```bash
+# Check current image tags
+grep -r "tag:" values/
+
+# Update a specific tag, then apply
+helmfile --environment homelab apply --selector name=radarr
+```
+
+## Secret management
+
+All secrets are injected via `.env` using Helmfile's `requiredEnv`. The `.env` file is gitignored — **never commit it**. For a shared team setup, consider migrating to [External Secrets Operator](https://external-secrets.io/) or [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets).
+
+---
+
+## Migrating from Docker Compose to k3s
+
+This guide is intentionally high-level. Its goal is to give you the mental model and tools to migrate your data safely, not to provide copy-paste commands.
+
+### Key conceptual differences
+
+| Docker Compose | k3s / Kubernetes |
+|---|---|
+| Volumes are host-path directories | Volumes are PersistentVolumeClaims (PVCs) backed by a StorageClass |
+| `ports:` binds directly to host | Services + Ingress route traffic through Traefik |
+| `.env` file consumed by Compose | `.env` consumed by Helmfile; secrets become k8s Secrets |
+| `depends_on:` | Helmfile ordering + Kubernetes readiness probes |
+| Single host, simple networking | Pod-to-pod via `<service>.<namespace>.svc.cluster.local` |
+
+### Migration approach
+
+The safest strategy is **parallel run, then cut over**:
+
+1. **Keep Docker Compose running** until k3s is verified stable.
+2. **Stop the Compose service** → copy its data directory to the target PVC → **start the k8s workload**.
+3. **Verify** the workload is healthy before proceeding to the next service.
+4. **Remove** the Compose service once the k8s version is confirmed working.
+
+### Copying data into PVCs
+
+PVCs backed by `local-config` (SSD) or `nfs-media` (NAS) are directories on the node or NAS. The simplest method is to use a temporary pod that mounts the PVC:
+
+```bash
+# Find the actual path of a local-config PVC
+kubectl get pv $(kubectl get pvc radarr-config -n media -o jsonpath='{.spec.volumeName}') \
+  -o jsonpath='{.spec.local.path}'
+
+# Or use kubectl cp via a temporary pod
+kubectl run -n media tmp-shell --rm -it --image=alpine \
+  --overrides='{"spec":{"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"radarr-config"}}],"containers":[{"name":"tmp","image":"alpine","command":["sh"],"volumeMounts":[{"name":"data","mountPath":"/data"}]}]}}'
+# Then from another terminal:
+kubectl cp ./radarr-config-backup/ media/tmp-shell:/data/
+```
+
+For NFS-backed PVCs (media library), copy directly on the NAS since both Compose and k3s will access the same NFS share. Point your Compose `volumes:` and your PVC to the same NFS path.
+
+### Useful tools
+
+| Tool | Purpose |
+|---|---|
+| [`kubectl cp`](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_cp/) | Copy files to/from pods |
+| [`k9s`](https://k9scli.io/) | Interactive cluster browser (watch pods, logs, exec) |
+| [`stern`](https://github.com/stern/stern) | Multi-pod log tailing |
+| [`velero`](https://velero.io/) | Backup/restore PVCs (already deployed in this setup) |
+| [`kubectx` / `kubens`](https://github.com/ahmetb/kubectx) | Quick context/namespace switching |
+
+### Service-specific notes
+
+- **Databases (Authentik, Immich, Affine, N8N)**: Export from the Compose Postgres container with `pg_dump`, then import into the CNPG cluster via a psql pod. See [CNPG documentation on import](https://cloudnative-pg.io/documentation/current/database_import/).
+- **Vaultwarden**: Copy the `/data` directory (contains `db.sqlite3` and attachments) into the k8s PVC. Stop Compose first to avoid a partial copy.
+- **Immich**: Copy the library and thumbnails directories. The ML model cache (`machine-learning/cache`) does **not** need to be copied — it will be re-downloaded automatically.
+- **Jellyfin**: Copy config and metadata. The media files stay on the NAS NFS share and are shared between Compose (if still running) and k8s via the same NFS path.
+- ***arr stack (Radarr/Sonarr/Prowlarr)**: Copy `/config` directories. Update the download client and indexer URLs to point to internal k8s service names after migration (e.g. `http://qbittorrent.media.svc.cluster.local:8080`).

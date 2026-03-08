@@ -1,0 +1,49 @@
+cluster:
+  name: n8n-db
+  instances: 1
+
+  storage:
+    size: 5Gi
+    storageClass: local-config
+
+  postgresql:
+    parameters:
+      max_connections: "100"
+      shared_buffers: 128MB
+
+  bootstrap:
+    initdb:
+      database: n8n
+      owner: n8n
+      secret:
+        name: n8n-db-secret
+
+  backup:
+    retentionPolicy: "30d"
+    barmanObjectStore:
+      endpointURL: "http://{{ requiredEnv \"MINIO_HOST\" }}:9000"
+      destinationPath: "s3://{{ requiredEnv \"CNPG_BUCKET\" }}/n8n/"
+      s3Credentials:
+        accessKeyId:
+          name: cnpg-minio-secret
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: cnpg-minio-secret
+          key: ACCESS_SECRET_KEY
+      wal:
+        compression: brotli
+      data:
+        compression: brotli
+
+  scheduledBackup:
+    - name: n8n-db-daily
+      schedule: "0 3 * * *"
+      backupOwnerReference: self
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

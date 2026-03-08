@@ -1,0 +1,7 @@
+releases:
+  - name: traefik-config
+    namespace: kube-system
+    chart: incubator/raw
+    version: "0.2.5"
+    values:
+      - ../../values/traefik/values.yaml
