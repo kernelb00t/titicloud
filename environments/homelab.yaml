@@ -15,6 +15,3 @@ minio:
 storageClasses:
   config: local-config
   media: nfs-media
-
-acme:
-  email: "{{ requiredEnv \"ACME_EMAIL\" }}"

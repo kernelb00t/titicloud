@@ -22,7 +22,7 @@ cluster:
     retentionPolicy: "30d"
     barmanObjectStore:
       endpointURL: "http://{{ requiredEnv \"MINIO_HOST\" }}:9000"
-      destinationPath: "s3://cnpg-backups/immich/"
+      destinationPath: "s3://{{ requiredEnv \"CNPG_BUCKET\" }}/immich/"
       s3Credentials:
         accessKeyId:
           name: cnpg-minio-secret

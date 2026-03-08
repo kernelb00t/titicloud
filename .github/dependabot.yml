@@ -1,19 +1,7 @@
 version: 2
 updates:
-  # Keep Helm chart versions up to date via root helmfile.yaml
-  # Note: Dependabot only scans helmfile.yaml files, not arbitrary release YAML files.
-  # For full coverage of all release files in releases/ and Docker image tags,
-  # use Renovate Bot (https://docs.renovatebot.com/modules/manager/helmfile/).
-  - package-ecosystem: "helm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "chore(helm)"
-    labels:
-      - "dependencies"
-
-  # Keep GitHub Actions up to date (if any are added later)
+  # Keep GitHub Actions up to date (if any are added later).
+  # Helm chart and Docker image versions are managed by Renovate Bot (renovate.json).
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

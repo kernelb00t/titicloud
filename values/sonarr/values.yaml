@@ -41,4 +41,15 @@ persistence:
 
 ingress:
   app:
-    enabled: false
+    enabled: true
+    className: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.tls: "true"
+      traefik.ingress.kubernetes.io/router.tls.certresolver: "letsencrypt"
+      # Authentik forward auth — internal auth is disabled on this service
+      traefik.ingress.kubernetes.io/router.middlewares: "kube-system-authentik-forwardauth@kubernetescrd"
+    hosts:
+      - host: "sonarr.{{ requiredEnv \"DOMAIN\" }}"
+        paths:
+          - path: /
+            pathType: Prefix

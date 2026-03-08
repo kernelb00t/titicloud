@@ -12,7 +12,7 @@ configuration:
     - name: default
       provider: aws
       # Bucket must be created in MinIO before deploying Velero
-      bucket: velero-backups
+      bucket: "{{ requiredEnv \"VELERO_BUCKET\" }}"
       config:
         region: minio
         s3ForcePathStyle: "true"

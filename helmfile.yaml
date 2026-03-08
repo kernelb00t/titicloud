@@ -37,7 +37,7 @@ helmfiles:
   - path: releases/infra/snapshot-class.yaml
   - path: releases/infra/cnpg-operator.yaml
   - path: releases/infra/velero.yaml
-  - path: releases/infra/caddy.yaml
+  - path: releases/infra/traefik-config.yaml
   - path: releases/infra/media-pvcs.yaml
 
   # 2. Auth namespace: DB first, then app
@@ -57,7 +57,7 @@ helmfiles:
 
   # 5. Media namespace
   - path: releases/media/jellyfin.yaml
-  - path: releases/media/jellyseerr.yaml
+  - path: releases/media/seerr.yaml
   - path: releases/media/qbittorrent.yaml
   - path: releases/media/radarr.yaml
   - path: releases/media/sonarr.yaml

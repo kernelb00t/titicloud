@@ -35,4 +35,13 @@ persistence:
 
 ingress:
   app:
-    enabled: false
+    enabled: true
+    className: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.tls: "true"
+      traefik.ingress.kubernetes.io/router.tls.certresolver: "letsencrypt"
+    hosts:
+      - host: "vault.{{ requiredEnv \"DOMAIN\" }}"
+        paths:
+          - path: /
+            pathType: Prefix
