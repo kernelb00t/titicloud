@@ -1,0 +1,11 @@
+bases:
+  - ../../bases/default.yaml.gotmpl
+
+releases:
+  - name: affine
+    installed: {{ dig "features" "affine" "app" true .Values }}
+    namespace: productivity
+    chart: bjw-s/app-template
+    version: "3.5.1"
+    values:
+      - ../../values/affine/values.yaml.gotmpl

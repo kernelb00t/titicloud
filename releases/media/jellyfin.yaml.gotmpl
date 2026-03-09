@@ -1,0 +1,11 @@
+bases:
+  - ../../bases/default.yaml.gotmpl
+
+releases:
+  - name: jellyfin
+    installed: {{ dig "features" "jellyfin" true .Values }}
+    namespace: media
+    chart: jellyfin/jellyfin
+    version: "2.1.0"
+    values:
+      - ../../values/jellyfin/values.yaml.gotmpl

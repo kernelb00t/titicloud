@@ -1,0 +1,11 @@
+bases:
+  - ../../bases/default.yaml.gotmpl
+
+releases:
+  - name: affine-db
+    installed: {{ dig "features" "affine" "db" true .Values }}
+    namespace: productivity
+    chart: cnpg/cluster
+    version: "0.5.0"
+    values:
+      - ../../values/affine-db/values.yaml.gotmpl

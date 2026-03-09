@@ -1,0 +1,17 @@
+# Global environment values for homelab
+domain: {{ requiredEnv "DOMAIN" | quote }}
+
+nfs:
+  server: {{ requiredEnv "NFS_SERVER" | quote }}
+  mediaPath: {{ requiredEnv "NFS_MEDIA_PATH" | quote }}
+  cachePath: {{ requiredEnv "NFS_CACHE_PATH" | quote }}
+
+minio:
+  host: {{ requiredEnv "MINIO_HOST" | quote }}
+  endpointURL: "http://{{ requiredEnv "MINIO_HOST" }}:9000"
+  accessKey: {{ requiredEnv "MINIO_ACCESS_KEY" | quote }}
+  secretKey: {{ requiredEnv "MINIO_SECRET_KEY" | quote }}
+
+storageClasses:
+  config: local-config
+  media: nfs-media

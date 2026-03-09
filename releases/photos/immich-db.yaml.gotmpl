@@ -1,0 +1,11 @@
+bases:
+  - ../../bases/default.yaml.gotmpl
+
+releases:
+  - name: immich-db
+    installed: {{ dig "features" "immich" "db" true .Values }}
+    namespace: photos
+    chart: cnpg/cluster
+    version: "0.5.0"
+    values:
+      - ../../values/immich-db/values.yaml.gotmpl

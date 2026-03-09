@@ -1,8 +1,0 @@
-releases:
-  - name: n8n
-    installed: {{ .Values.features.n8n.app }}
-    namespace: productivity
-    chart: bjw-s/app-template
-    version: "3.5.1"
-    values:
-      - ../../values/n8n/values.yaml

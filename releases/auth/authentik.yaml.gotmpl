@@ -1,0 +1,11 @@
+bases:
+  - ../../bases/default.yaml.gotmpl
+
+releases:
+  - name: authentik
+    installed: {{ dig "features" "authentik" "app" true .Values }}
+    namespace: auth
+    chart: goauthentik/authentik
+    version: "2026.2.0"
+    values:
+      - ../../values/authentik/values.yaml.gotmpl

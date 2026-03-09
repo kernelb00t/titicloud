@@ -1,8 +1,0 @@
-releases:
-  - name: authentik
-    installed: {{ .Values.features.authentik.app }}
-    namespace: auth
-    chart: goauthentik/authentik
-    version: "2026.2.0"
-    values:
-      - ../../values/authentik/values.yaml

@@ -1,0 +1,10 @@
+bases:
+  - ../../bases/default.yaml.gotmpl
+
+releases:
+  - name: media-pvcs
+    namespace: default
+    chart: incubator/raw
+    version: "0.2.5"
+    values:
+      - ../../values/pvcs/media-pvcs.yaml

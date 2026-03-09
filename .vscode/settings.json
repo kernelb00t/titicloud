@@ -1,0 +1,15 @@
+{
+    "yaml.schemas": {
+        "https://www.schemastore.org/helmfile.json": "helmfile.yaml"
+    },
+    "files.associations": {
+        "*.yaml.gotmpl": "helm"
+    },
+    // Prevent the default YAML extension from trying to validate Helm templates:
+    "yaml.customTags": [
+        "!requiredEnv scalar",
+        "!readFile scalar"
+    ],
+    // Alternatively, if you use the 'vscode-helm' extension, it will take over Validation for "helm" files natively.
+    "python.terminal.useEnvFile": true
+}

@@ -1,0 +1,11 @@
+bases:
+  - ../../bases/default.yaml.gotmpl
+
+releases:
+  - name: radarr
+    installed: {{ dig "features" "radarr" true .Values }}
+    namespace: media
+    chart: bjw-s/app-template
+    version: "3.5.1"
+    values:
+      - ../../values/radarr/values.yaml.gotmpl

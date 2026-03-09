@@ -1,0 +1,11 @@
+bases:
+  - ../../bases/default.yaml.gotmpl
+
+releases:
+  - name: n8n
+    installed: {{ dig "features" "n8n" "app" true .Values }}
+    namespace: productivity
+    chart: bjw-s/app-template
+    version: "3.5.1"
+    values:
+      - ../../values/n8n/values.yaml.gotmpl

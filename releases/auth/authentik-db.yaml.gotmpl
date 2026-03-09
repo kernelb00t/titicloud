@@ -1,0 +1,11 @@
+bases:
+  - ../../bases/default.yaml.gotmpl
+
+releases:
+  - name: authentik-db
+    installed: {{ dig "features" "authentik" "db" true .Values }}
+    namespace: auth
+    chart: cnpg/cluster
+    version: "0.5.0"
+    values:
+      - ../../values/authentik-db/values.yaml.gotmpl

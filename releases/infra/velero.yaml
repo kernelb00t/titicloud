@@ -1,7 +1,0 @@
-releases:
-  - name: velero
-    namespace: velero
-    chart: vmware-tanzu/velero
-    version: "11.4.0"
-    values:
-      - ../../values/velero/values.yaml

@@ -1,0 +1,11 @@
+bases:
+  - ../../bases/default.yaml.gotmpl
+
+releases:
+  - name: sonarr
+    installed: {{ dig "features" "sonarr" true .Values }}
+    namespace: media
+    chart: bjw-s/app-template
+    version: "3.5.1"
+    values:
+      - ../../values/sonarr/values.yaml.gotmpl

@@ -1,0 +1,58 @@
+global:
+  image:
+    tag: "2026.2.0"
+  env:
+    - name: AUTHENTIK_SECRET_KEY
+      value: {{ requiredEnv "AUTHENTIK_SECRET_KEY" | quote }}
+    - name: AUTHENTIK_POSTGRESQL__HOST
+      value: {{ requiredEnv "AUTHENTIK_DB_HOST" | quote }}
+    - name: AUTHENTIK_POSTGRESQL__NAME
+      value: authentik
+    - name: AUTHENTIK_POSTGRESQL__USER
+      value: authentik
+    - name: AUTHENTIK_POSTGRESQL__PASSWORD
+      value: {{ requiredEnv "AUTHENTIK_DB_PASSWORD" | quote }}
+
+server:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.tls: "true"
+      traefik.ingress.kubernetes.io/router.tls.certresolver: "letsencrypt"
+    hosts:
+      - host: "auth.{{ requiredEnv "DOMAIN" }}"
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: []
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+worker:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+postgresql:
+  enabled: false
+
+redis:
+  enabled: true
+  master:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
