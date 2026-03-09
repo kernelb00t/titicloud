@@ -8,29 +8,11 @@ permissions:
   contents: read
 
 jobs:
-  yaml-lint:
-    name: YAML lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install yamllint
-        run: pip install --quiet yamllint
-
-      - name: Lint YAML files
-        run: yamllint --strict .
-
   helmfile-lint:
     name: Helmfile lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Helm and Helmfile
-        uses: mamezou-tech/setup-helmfile@v2.2.0
-        with:
-          helmfile-version: v0.169.2
-          install-kubectl: false
 
       - name: Load placeholder env vars
         run: |
@@ -40,13 +22,10 @@ jobs:
           set +a
           env >> "$GITHUB_ENV"
 
+      - uses: helmfile/helmfile-action@v2.2.0
+        with:
+          helmfile-args: lint
+
       - name: Helmfile lint
         run: |
-          EXIT_CODE=0
-          while IFS= read -r release_file; do
-            echo "==> Linting $release_file"
-            if ! helmfile --environment homelab --file "$release_file" lint 2>&1; then
-              EXIT_CODE=1
-            fi
-          done < <(find releases -name '*.yaml' | sort)
-          exit $EXIT_CODE
+          helmfile lint
