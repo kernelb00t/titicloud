@@ -1,37 +1,48 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
-  "labels": ["dependencies"],
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": [
+    "dependencies"
+  ],
   "commitMessagePrefix": "chore(deps):",
   "nix": {
     "enabled": true
   },
   "packageRules": [
     {
-      "matchManagers": ["nix"],
+      "matchManagers": [
+        "nix"
+      ],
       "groupName": "nix flakes",
       "commitMessagePrefix": "chore(nix):"
     },
     {
-      "matchManagers": ["helmfile", "helm-values"],
+      "matchManagers": [
+        "helmfile",
+        "helm-values"
+      ],
       "groupName": "helm charts",
       "commitMessagePrefix": "chore(helm):"
     },
     {
-      "matchManagers": ["docker"],
+      "matchManagers": [
+        "docker"
+      ],
       "groupName": "docker images",
       "commitMessagePrefix": "chore(images):"
     }
   ],
   "helmfile": {
-    "fileMatch": [
-      "(^|/)helmfile\\.ya?ml(\\.gotmpl)?$",
-      "(^|/)releases/.+\\.ya?ml(\\.gotmpl)?$"
+    "managerFilePatterns": [
+      "/(^|/)helmfile\\.ya?ml(\\.gotmpl)?$/",
+      "/(^|/)releases/.+\\.ya?ml(\\.gotmpl)?$/"
     ]
   },
   "helm-values": {
-    "fileMatch": [
-      "(^|/)values/.+/values\\.ya?ml(\\.gotmpl)?$"
+    "managerFilePatterns": [
+      "/(^|/)values/.+/values\\.ya?ml(\\.gotmpl)?$/"
     ]
   }
 }
