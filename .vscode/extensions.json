@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "redhat.vscode-yaml",
+    "mkhl.direnv",
+    "github.vscode-github-actions",
+    "bbenoist.Nix",
+    "ms-kubernetes-tools.vscode-kubernetes-tools",
+    "PKief.material-icon-theme"
+  ]
+}

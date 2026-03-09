@@ -1,0 +1,31 @@
+name: Validate PR
+
+on:
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  helmfile-lint:
+    name: Helmfile lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Load placeholder env vars
+        run: |
+          # Source .env.example so every requiredEnv call succeeds during lint
+          set -a
+          source .env.example
+          set +a
+          env >> "$GITHUB_ENV"
+
+      - uses: helmfile/helmfile-action@v2.2.0
+        with:
+          helmfile-args: lint
+
+      - name: Helmfile lint
+        run: |
+          helmfile lint
