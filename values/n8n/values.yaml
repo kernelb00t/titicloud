@@ -4,7 +4,7 @@ controllers:
       app:
         image:
           repository: n8nio/n8n
-          tag: "1.68.0"
+          tag: "2.11.2"
         env:
           DB_TYPE: postgresdb
           DB_POSTGRESDB_HOST: "{{ requiredEnv \"N8N_DB_HOST\" }}"
