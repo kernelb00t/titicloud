@@ -93,6 +93,45 @@ grep -r "tag:" values/
 helmfile --environment homelab apply --selector name=radarr
 ```
 
+## CI / CD
+
+Two GitHub Actions workflows automate validation and deployment:
+
+| Workflow | Trigger | What it does |
+|---|---|---|
+| **Validate PR** | Pull request → `master` | YAML lint (`yamllint --strict`) + `helmfile lint` |
+| **Deploy** | Push to `master` | Connects via Tailscale, SSHs into the target node, pulls the repo and runs `helmfile apply` |
+
+### Required GitHub secrets
+
+| Secret | Description | How to generate |
+|---|---|---|
+| `TS_OAUTH_CLIENT_ID` | Tailscale OAuth client ID | Tailscale admin console → Settings → OAuth clients → _Generate_ |
+| `TS_OAUTH_SECRET` | Tailscale OAuth client secret | Same as above |
+| `SSH_PRIVATE_KEY` | SSH private key (ed25519 recommended) for the deploy user on the target node | `ssh-keygen -t ed25519 -f deploy_key -N ""` — add `deploy_key.pub` to the node's `~/.ssh/authorized_keys`, then store the private key as a secret and delete the local copy |
+
+### Optional GitHub variables
+
+These have sensible defaults and only need to be set if your setup differs.
+
+| Variable | Default | Description |
+|---|---|---|
+| `DEPLOY_NODE` | `deb13-k3s` | Tailscale hostname (MagicDNS) of the deploy target |
+| `DEPLOY_USER` | `deploy` | SSH user on the target node |
+| `DEPLOY_PATH` | `~/titicloud` | Path to the cloned repo on the target node |
+
+### Tailscale setup
+
+1. In the [Tailscale admin console](https://login.tailscale.com/admin/settings/oauth), create an **OAuth client** with the tag `tag:ci` (or whichever tag you use in the workflow).
+2. Make sure the `tag:ci` tag exists in your [Tailscale ACLs](https://login.tailscale.com/admin/acls) and is allowed to reach the deploy node over SSH (port 22).
+3. The target node must already be a member of your tailnet.
+
+### Target node prerequisites
+
+- The repo must be cloned at `DEPLOY_PATH` with the correct remote (HTTPS or SSH).
+- A valid `.env` file must exist in that directory (see [Deployment](#deployment)).
+- `helm`, `helmfile`, and `kubectl` must be available in the deploy user's `PATH`.
+
 ## Secret management
 
 All secrets are injected via `.env` using Helmfile's `requiredEnv`. The `.env` file is gitignored — **never commit it**. For a shared team setup, consider migrating to [External Secrets Operator](https://external-secrets.io/) or [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets).
