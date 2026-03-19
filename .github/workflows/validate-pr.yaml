@@ -12,7 +12,7 @@ jobs:
     name: Helmfile lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v5
 
       - name: Load placeholder env vars
         run: |
@@ -22,7 +22,7 @@ jobs:
           set +a
           env >> "$GITHUB_ENV"
 
-      - uses: helmfile/helmfile-action@v2.3.1
+      - uses: helmfile/helmfile-action@v2
         with:
           helmfile-args: lint
 
