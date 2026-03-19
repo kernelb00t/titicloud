@@ -22,7 +22,9 @@ features:
   vaultwarden: true
 
   # --- Media ---
-  jellyfin: true
+  jellyfin:
+    app: true
+    hardwareDecoding: false
   seerr: true
   qbittorrent: true
   radarr: true

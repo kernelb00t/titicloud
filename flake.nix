@@ -14,6 +14,9 @@
     in
     {
       devShells = forEachSupportedSystem ({ pkgs }: {
+        environment = {
+          KUBECONFIG = "./kubeconfig";
+        };
         default = pkgs.mkShell {
           packages = with pkgs; [
             kubernetes-helm
@@ -23,6 +26,7 @@
             kubectx
             stern
             velero
+            python3
           ];
         };
       });

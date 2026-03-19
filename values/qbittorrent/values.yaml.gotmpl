@@ -6,13 +6,12 @@ controllers:
           repository: ghcr.io/qdm12/gluetun
           tag: "v3.41.1"
         env:
-          VPN_SERVICE_PROVIDER: custom
+          VPN_SERVICE_PROVIDER: protonvpn
           VPN_TYPE: wireguard
+          SERVER_COUNTRIES: {{ requiredEnv "SERVER_COUNTRIES" | quote }}
           WIREGUARD_PRIVATE_KEY: {{ requiredEnv "WIREGUARD_PRIVATE_KEY" | quote }}
-          WIREGUARD_ADDRESSES: {{ requiredEnv "WIREGUARD_ADDRESSES" | quote }}
-          VPN_ENDPOINT_IP: {{ requiredEnv "VPN_ENDPOINT_IP" | quote }}
-          VPN_ENDPOINT_PORT: {{ requiredEnv "VPN_ENDPOINT_PORT" | quote }}
-          WIREGUARD_PUBLIC_KEY: {{ requiredEnv "WIREGUARD_PUBLIC_KEY" | quote }}
+          VPN_PORT_FORWARDING: "off"
+          UPDATER_PERIOD: "24h"
           FIREWALL_INPUT_PORTS: "8080"
           # k3s default pod/service CIDRs - adjust if your cluster uses different ranges
           FIREWALL_OUTBOUND_SUBNETS: "10.42.0.0/16,10.43.0.0/16,fd00:42::/56,fd00:43::/108"

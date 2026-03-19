@@ -7,6 +7,7 @@ persistence:
     enabled: true
     existingClaim: media-data-pvc
 
+{{- if dig "features" "jellyfin" "hardwareDecoding" false .Values }}
 # Intel iGPU (13th gen, Debian host) for hardware video transcoding.
 # The host must have the intel-media-va-driver or intel-media-driver package installed.
 # Render device group IDs on Debian: video=44, render=105 (verify with `stat -c %g /dev/dri/renderD128`).
@@ -24,6 +25,7 @@ podSecurityContext:
   supplementalGroups:
     - 44   # video group
     - 105  # render group (Debian default; verify with: stat -c %g /dev/dri/renderD128)
+{{- end }}
 
 ingress:
   enabled: true
