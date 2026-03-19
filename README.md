@@ -1,6 +1,6 @@
 # titiCloud
 
-Helmfile repo for the Thivillon homelab — single-node k3s on an Intel NUC (13th gen i5), Synology NAS as NFS + MinIO, no GitOps, no MetalLB.
+Helmfile repo for the Thivillon homelab — single-node k3s on an Intel NUC (13th gen i5), Synology NAS as NFS + Garage, no GitOps, no MetalLB.
 
 ## Architecture overview
 
@@ -14,13 +14,13 @@ NUC (k3s)
   ├── Jellyfin            — media server (Intel iGPU hardware transcode)
   ├── Seerr               — media request portal
   ├── Radarr / Sonarr / Prowlarr / qBittorrent — *arr stack (VPN via gluetun)
-  └── Velero              — backups to MinIO (NAS)
+  └── Velero              — backups to Garage (NAS)
 
 Synology NAS
   ├── NFS /volume1/media  — shared media-data-pvc (1Ti)
   ├── NFS /volume1/cache  — Immich thumbnail cache
-  ├── MinIO               — velero-backups + cnpg-backups
-  └── CloudNativePG clusters write WAL to MinIO via Barman
+  ├── Garage              — velero-backups + cnpg-backups
+  └── CloudNativePG clusters write WAL to Garage via Barman
 ```
 
 ## Prerequisites — what must exist before `helmfile apply`
@@ -52,13 +52,12 @@ curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server \
 ### On the Synology NAS
 - NFS share `/volume1/media` exported and accessible from NUC
 - NFS share `/volume1/cache` exported and accessible from NUC
-- MinIO running and accessible at port 9000
-- Two MinIO buckets created **before** first deploy (names match your `.env`):
-  ```bash
-  mc alias set nas http://NAS_IP:9000 ACCESS_KEY SECRET_KEY
-  mc mb nas/velero-backups
-  mc mb nas/cnpg-backups
-  ```
+- Deploy Garage as a single-node app on your Synology NAS using the provided configuration in the `nas/` directory.
+  - Customise the variables in `nas/.env` (from `nas/.env.example`).
+  - Deploy with `docker-compose up -d`.
+  - Follow the instructions in `nas/README.md` to initialize the cluster and create the required buckets (`velero-backups`, `cnpg-backups`).
+  - Garage API will be accessible on the NAS IP at port `3900`.
+- Provide the generated S3 credentials (Access Key and Secret Key) in your top-level `.env`.
 
 ### Cluster-internal resources (created by Helmfile)
 Helmfile creates all namespaces automatically. The CNPG operator must be running before CNPG cluster releases are deployed — the `helmfile.yaml` order enforces this.
@@ -71,7 +70,7 @@ Helmfile creates all namespaces automatically. The CNPG operator must be running
 | Service CIDR | `10.43.0.0/16` | Same as above |
 | render group GID | `105` (Debian) | `supplementalGroups` in `values/jellyfin/values.yaml` |
 | video group GID | `44` | Same as above |
-| MinIO port | `9000` | `endpointURL` in all `values/*-db/values.yaml` and `values/velero/values.yaml` |
+| Garage port | `3900` | `endpointURL` in all `values/*-db/values.yaml` and `values/velero/values.yaml` |
 | NFS media path | `/volume1/media` | `NFS_MEDIA_PATH` in `.env` |
 | NFS cache path | `/volume1/cache` | `NFS_CACHE_PATH` in `.env` |
 
@@ -82,7 +81,7 @@ Helmfile creates all namespaces automatically. The CNPG operator must be running
 cp .env.example .env
 $EDITOR .env
 
-# 2. Create MinIO buckets (see Prerequisites above)
+# 2. Create Garage buckets (see Prerequisites above)
 
 # 3. Deploy everything in order
 helmfile --environment homelab apply

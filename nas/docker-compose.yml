@@ -1,0 +1,17 @@
+---
+services:
+  garage:
+    image: dxflrs/garage:v2.2.0 # Target a stable version
+    container_name: garage
+    restart: unless-stopped
+    # Depending on Synology setup, host network is often easier to expose the 3900 port to the NUC
+    # but bridge with port mapping might be cleaner. Let's use port mapping.
+    ports:
+      - "${GARAGE_API_PORT:?GARAGE_API_PORT is required}:3900" # S3 API
+    environment:
+      # Inject the RPC secret via environment variable for security
+      - GARAGE_RPC_SECRET=${GARAGE_RPC_SECRET:?GARAGE_RPC_SECRET is required}
+    volumes:
+      - ./garage.toml:/etc/garage/garage.toml:ro
+      - ${GARAGE_DATA_PATH:?GARAGE_DATA_PATH is required}:/var/lib/garage
+    command: [ "server", "-c", "/etc/garage/garage.toml" ]

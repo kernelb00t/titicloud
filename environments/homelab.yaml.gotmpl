@@ -5,12 +5,11 @@ nfs:
   server: {{ requiredEnv "NFS_SERVER" | quote }}
   mediaPath: {{ requiredEnv "NFS_MEDIA_PATH" | quote }}
   cachePath: {{ requiredEnv "NFS_CACHE_PATH" | quote }}
-
-minio:
-  host: {{ requiredEnv "MINIO_HOST" | quote }}
-  endpointURL: "http://{{ requiredEnv "MINIO_HOST" }}:9000"
-  accessKey: {{ requiredEnv "MINIO_ACCESS_KEY" | quote }}
-  secretKey: {{ requiredEnv "MINIO_SECRET_KEY" | quote }}
+garage:
+  host: {{ requiredEnv "GARAGE_HOST" | quote }}
+  endpointURL: "http://{{ requiredEnv "GARAGE_HOST" }}:3900"
+  accessKey: {{ requiredEnv "GARAGE_ACCESS_KEY" | quote }}
+  secretKey: {{ requiredEnv "GARAGE_SECRET_KEY" | quote }}
 
 storageClasses:
   config: local-config
