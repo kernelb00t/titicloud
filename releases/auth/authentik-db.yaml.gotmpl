@@ -6,6 +6,6 @@ releases:
     installed: {{ dig "features" "authentik" "db" true .Values }}
     namespace: auth
     chart: cnpg/cluster
-    version: "0.5.0"
+    version: "0.6.0"
     values:
       - ../../values/authentik-db/values.yaml.gotmpl
