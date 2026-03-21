@@ -98,7 +98,6 @@ Helmfile creates all namespaces automatically. The CNPG operator must be running
 | video group GID | `44` | Same as above |
 | Garage port | `3900` | `endpointURL` in all `values/*-db/values.yaml` and `values/velero/values.yaml` |
 | NFS media path | `/volume1/media` | `NFS_MEDIA_PATH` in `.env` |
-| NFS cache path | `/volume1/cache` | `NFS_CACHE_PATH` in `.env` |
 | N8N proxy hops | `1` | `N8N_PROXY_HOPS` in `values/n8n/values.yaml` |
 
 ### Precisions about quirks
