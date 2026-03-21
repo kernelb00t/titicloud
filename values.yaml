@@ -4,30 +4,28 @@
 features:
   # --- Auth ---
   authentik:
-    app: true
-    db: true
+    app: false
+    db: false
 
   # --- Photos ---
   immich:
-    app: true
-    db: true
+    app: false
+    db: false
 
   # --- Productivity ---
   affine:
-    app: true
-    db: true
-  n8n:
-    app: true
-    db: true
+    app: false
+    db: false
+  n8n: false
   vaultwarden: true
 
   # --- Media ---
   jellyfin:
-    app: true
+    app: false
     hardwareDecoding: false
-  seerr: true
-  qbittorrent: true
-  radarr: true
-  sonarr: true
-  prowlarr: true
-  flaresolverr: true
+  seerr: false
+  qbittorrent: false
+  radarr: false
+  sonarr: false
+  prowlarr: false
+  flaresolverr: false
