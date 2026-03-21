@@ -73,6 +73,14 @@ Helmfile creates all namespaces automatically. The CNPG operator must be running
 | Garage port | `3900` | `endpointURL` in all `values/*-db/values.yaml` and `values/velero/values.yaml` |
 | NFS media path | `/volume1/media` | `NFS_MEDIA_PATH` in `.env` |
 | NFS cache path | `/volume1/cache` | `NFS_CACHE_PATH` in `.env` |
+| N8N proxy hops | `1` | `N8N_PROXY_HOPS` in `values/n8n/values.yaml` |
+
+### Precisions about quirks
+#### Pod and Service CIDR
+Having those setup allows communication with pods and services in the cluster. The gluetun service redirects everything from VPNed services to the VPN by default, so the pod CIDR and service CIDR must be set to not be sent to the VPN server.
+
+#### Proxy hops
+If you put Cloudflare as a proxy in front of the k3s cluster, there will be 2 reverse proxies: Cloudflare and Traefik. In this case, you need to set `N8N_PROXY_HOPS` to `2`, and check for other services configuration as well. By not properly setting this, you risk having logs about IPs that are completely wrong (referencing either the Kubernetes Traefik instance, Cloudflare's servers, or forged IPs from malicious clients).
 
 ## Deployment
 
