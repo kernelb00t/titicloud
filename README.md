@@ -2,6 +2,32 @@
 
 Helmfile repo for the Thivillon homelab — single-node k3s on an Intel NUC (13th gen i5), Synology NAS as NFS + Garage, no GitOps, no MetalLB.
 
+## Summary
+
+- [Architecture overview](#architecture-overview)
+- [Prerequisites — what must exist before `helmfile apply`](#prerequisites--what-must-exist-before-helmfile-apply)
+  - [On the NUC host (Debian)](#on-the-nuc-host-debian)
+  - [On the Synology NAS](#on-the-synology-nas)
+  - [Cluster-internal resources (created by Helmfile)](#cluster-internal-resources-created-by-helmfile)
+- [Non-standard configuration quirks](#non-standard-configuration-quirks)
+  - [Precisions about quirks](#precisions-about-quirks)
+    - [Pod and Service CIDR](#pod-and-service-cidr)
+    - [Proxy hops](#proxy-hops)
+- [Deployment](#deployment)
+- [Updating dependencies](#updating-dependencies)
+- [CI / CD](#ci--cd)
+  - [Required GitHub secrets](#required-github-secrets)
+  - [Optional GitHub variables](#optional-github-variables)
+  - [Tailscale setup](#tailscale-setup)
+  - [Target node prerequisites](#target-node-prerequisites)
+- [Secret management](#secret-management)
+- [Migrating from Docker Compose to k3s](#migrating-from-docker-compose-to-k3s)
+  - [Key conceptual differences](#key-conceptual-differences)
+  - [Migration approach](#migration-approach)
+  - [Copying data into PVCs](#copying-data-into-pvcs)
+  - [Useful tools](#useful-tools)
+  - [Service-specific notes](#service-specific-notes)
+
 ## Architecture overview
 
 ```
