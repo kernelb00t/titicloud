@@ -29,6 +29,7 @@ cluster:
     barmanObjectStore:
       endpointURL: "http://{{ requiredEnv "GARAGE_HOST" }}:3900"
       destinationPath: "s3://{{ requiredEnv "CNPG_BUCKET" }}/immich/"
+      s3ForcePathStyle: true
       s3Credentials:
         accessKeyId:
           name: cnpg-garage-secret
