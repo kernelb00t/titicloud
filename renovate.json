@@ -10,6 +10,17 @@
   "nix": {
     "enabled": true
   },
+  "registryAliases": {
+    "cnpg": "https://cloudnative-pg.github.io/charts",
+    "vmware-tanzu": "https://vmware-tanzu.github.io/helm-charts",
+    "nfs-subdir": "https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner",
+    "piraeus": "https://piraeus.io/helm-charts",
+    "goauthentik": "https://charts.goauthentik.io",
+    "immich": "https://immich-app.github.io/immich-charts",
+    "bjw-s": "https://bjw-s-labs.github.io/helm-charts",
+    "jellyfin": "https://jellyfin.github.io/jellyfin-helm",
+    "incubator": "https://charts.helm.sh/incubator"
+  },
   "packageRules": [
     {
       "matchUpdateTypes": ["major"],
