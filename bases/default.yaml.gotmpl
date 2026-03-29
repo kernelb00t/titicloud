@@ -8,9 +8,6 @@ helmDefaults:
   timeout: 600
   createNamespace: true
   cleanupOnFail: true
-  recreatePods: true
-  force: true
-  reuseValues: false
   deleteWait: true
 
 repositories:
@@ -32,3 +29,5 @@ repositories:
     url: https://bedag.github.io/helm-charts
   - name: dev-charts
     url: https://dalamudx.github.io/helm-charts
+  - name: sure
+    url: https://we-promise.github.io/sure/

@@ -1,0 +1,62 @@
+image:
+  tag: "stable"
+
+rails:
+  secret:
+    enabled: true
+    values:
+      SECRET_KEY_BASE: {{ env "SURE_SECRET_KEY" | default "temp_secret" | quote }}
+      ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY: {{ env "SURE_PRIMARY_KEY" | default "temp_primary_key" | quote }}
+      ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY: {{ env "SURE_DETERMINISTIC_KEY" | default "temp_deterministic" | quote }}
+      ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT: {{ env "SURE_SALT" | default "temp_salt" | quote }}
+      redis-password: {{ env "SURE_REDIS_PASSWORD" | default "temp_redis" | quote }}
+
+ingress:
+  enabled: true
+  className: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: "letsencrypt"
+  hosts:
+    - host: "sure.{{ requiredEnv "DOMAIN" }}"
+      paths:
+        - path: /
+          pathType: Prefix
+
+cnpg:
+  enabled: false
+  cluster:
+    enabled: true
+    name: "sure-db"
+    instances: 1
+    storage:
+      size: 10Gi
+      storageClassName: "local-config"
+    # To be configured later when barman-cloud is ready
+    plugins: []
+
+redisOperator:
+  enabled: false
+  managed:
+    enabled: false
+
+redisSimple:
+  enabled: true
+  persistence:
+    enabled: true
+    storageClass: "local-config"
+    size: 2Gi
+
+web:
+  livenessProbe:
+    httpGet:
+      path: /up
+      port: http
+  readinessProbe:
+    httpGet:
+      path: /up
+      port: http
+  startupProbe:
+    httpGet:
+      path: /up
+      port: http
