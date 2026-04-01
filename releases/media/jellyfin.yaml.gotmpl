@@ -1,0 +1,10 @@
+bases:
+  - ../../bases/default.yaml.gotmpl
+
+releases:
+  - name: jellyfin
+    namespace: media
+    chart: jellyfin/jellyfin
+    version: "2.7.0"
+    values:
+      - ../../values/media/jellyfin.yaml.gotmpl

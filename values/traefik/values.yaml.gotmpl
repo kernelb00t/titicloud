@@ -15,10 +15,20 @@ ports:
           to: websecure
           scheme: https
           permanent: true
+    forwardedHeaders:
+      trustedProxies:
+        - 192.168.1.124
+        - 2a01:e0a:469:f0a1::5b0
+        - 2a01:e0a:469:f0a1:b70a:e809:38ec:6254
   websecure:
     # Même chose pour HTTPS
     port: 8443
     hostPort: 443
+    forwardedHeaders:
+      trustedProxies:
+        - 192.168.1.124
+        - 2a01:e0a:469:f0a1::5b0
+        - 2a01:e0a:469:f0a1:b70a:e809:38ec:6254
 
 # Persistence pour stocker acme.json entre les redémarrages
 persistence:
@@ -28,6 +38,8 @@ persistence:
 
 # Fix permissions sur acme.json (requis par Let's Encrypt)
 deployment:
+  strategy:
+    type: Recreate
   initContainers:
   - name: volume-permissions
     image: busybox:1.37.0

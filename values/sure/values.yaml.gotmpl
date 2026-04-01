@@ -1,3 +1,6 @@
+{{- $mode := env "SURE_ENV" | default "dev" -}}
+{{- $baseDomain := (eq $mode "prod") | ternary (requiredEnv "DOMAIN_PROD") (requiredEnv "DOMAIN_DEV") -}}
+{{- $host := printf "sure.%s" $baseDomain -}}
 image:
   # renovate: datasource=github-releases depName=we-promise/sure
   tag: "v0.6.8"
@@ -19,7 +22,7 @@ ingress:
     traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/router.tls.certresolver: "letsencrypt"
   hosts:
-    - host: "sure.{{ requiredEnv "DOMAIN" }}"
+    - host: {{ $host | quote }}
       paths:
         - path: /
           pathType: Prefix
@@ -49,6 +52,8 @@ redisSimple:
     size: 2Gi
 
 web:
+  strategy:
+    type: Recreate
   livenessProbe:
     httpGet:
       path: /up

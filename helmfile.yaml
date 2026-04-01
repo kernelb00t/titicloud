@@ -5,7 +5,6 @@ bases:
 helmfiles:
 # Layer 1 — Operators et infra transverse
 - path: releases/infra/cert-manager.yaml.gotmpl
-- path: releases/infra/nfs-provisioner.yaml.gotmpl
 - path: releases/infra/local-config-storageclass.yaml.gotmpl
 - path: releases/infra/cnpg.yaml.gotmpl
 - path: releases/infra/traefik.yaml.gotmpl
@@ -16,14 +15,21 @@ helmfiles:
 - path: releases/auth/authentik-db-16.yaml.gotmpl
 - path: releases/auth/authentik.yaml.gotmpl
 
-# Layer 3 — AFFiNE namespace
-- path: releases/affine/secrets.yaml.gotmpl
-- path: releases/affine/affine-db-16.yaml.gotmpl
-- path: releases/affine/redis.yaml.gotmpl
-- path: releases/affine/affine.yaml.gotmpl
+# # Layer 3 — Sure namespace
+# - path: releases/sure/sure.yaml.gotmpl
 
-# Layer 4 — Sure namespace
-- path: releases/sure/sure.yaml.gotmpl
+# # Layer 4 — n8n namespace
+# - path: releases/n8n/n8n.yaml.gotmpl
 
-# Layer 5 — n8n namespace
-- path: releases/n8n/n8n.yaml.gotmpl
+# # Layer 5 — Vaultwarden namespace
+# - path: releases/vaultwarden/vaultwarden.yaml.gotmpl
+
+# Layer 6 — Media namespace
+- path: releases/media/secrets.yaml.gotmpl
+- path: releases/media/storage.yaml.gotmpl
+
+# - path: releases/media/seerr.yaml.gotmpl
+# - path: releases/media/prowlarr.yaml.gotmpl
+# - path: releases/media/sonarr.yaml.gotmpl
+# - path: releases/media/radarr.yaml.gotmpl
+# - path: releases/media/jellyfin.yaml.gotmpl

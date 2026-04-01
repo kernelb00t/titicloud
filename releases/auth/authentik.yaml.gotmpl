@@ -2,6 +2,13 @@ bases:
   - ../../bases/default.yaml.gotmpl
 
 releases:
+  - name: authentik-storage
+    namespace: auth
+    chart: bedag/raw
+    version: "2.0.2"
+    values:
+      - ../../values/authentik/storage.yaml.gotmpl
+
   - name: authentik
     namespace: auth
     chart: goauthentik/authentik

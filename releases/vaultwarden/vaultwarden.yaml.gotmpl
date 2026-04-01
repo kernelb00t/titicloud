@@ -2,9 +2,9 @@ bases:
   - ../../bases/default.yaml.gotmpl
 
 releases:
-  - name: affine-redis
-    namespace: affine
+  - name: vaultwarden
+    namespace: vaultwarden
     chart: bjw-s/app-template
     version: "4.6.2"
     values:
-      - ../../values/affine-redis/values.yaml.gotmpl
+      - ../../values/vaultwarden/values.yaml.gotmpl

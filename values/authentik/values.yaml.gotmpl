@@ -1,4 +1,6 @@
----
+{{ $mode := env "AUTHENTIK_ENV" | default "dev" -}}
+{{- $baseDomain := (eq $mode "prod") | ternary (requiredEnv "DOMAIN_PROD") (requiredEnv "DOMAIN_DEV") -}}
+{{- $host := printf "auth.%s" $baseDomain -}}
 # Global settings
 global:
   image:
@@ -37,6 +39,8 @@ authentik:
 
 # Server configuration
 server:
+  deploymentStrategy:
+    type: Recreate
   ingress:
     enabled: true
     ingressClassName: traefik
@@ -44,7 +48,7 @@ server:
       traefik.ingress.kubernetes.io/router.tls: "true"
       traefik.ingress.kubernetes.io/router.tls.certresolver: "letsencrypt"
     hosts:
-      - "auth.{{ requiredEnv "DOMAIN" }}"
+      - {{ $host | quote }}
     paths:
       - /
     pathType: Prefix
@@ -56,9 +60,20 @@ server:
     limits:
       cpu: 1000m
       memory: 1Gi
+  # Volume pour les données d'Authentik
+  volumeMounts:
+    - name: authentik-data
+      mountPath: /media
+
+  volumes:
+    - name: authentik-data
+      persistentVolumeClaim:
+        claimName: authentik-data-pvc
 
 # Worker configuration
 worker:
+  deploymentStrategy:
+    type: Recreate
   resources:
     requests:
       cpu: 100m
@@ -66,6 +81,15 @@ worker:
     limits:
       cpu: 500m
       memory: 512Mi
+
+  volumeMounts:
+    - name: authentik-data
+      mountPath: /media
+
+  volumes:
+    - name: authentik-data
+      persistentVolumeClaim:
+        claimName: authentik-data-pvc
 
 # Disable internal postgresql
 postgresql:
