@@ -20,7 +20,7 @@ authentik:
     name: "authentik"
     user: "authentik"
     password: {{ requiredEnv "AUTHENTIK_DB_PASSWORD" | quote }}
-  
+
   # Email configuration (Mailcow)
   email:
     host: {{ env "AUTHENTIK_EMAIL_HOST" | default "" | quote }}
