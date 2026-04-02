@@ -2,7 +2,6 @@
 # Docs: https://jellyfin.org
 
 image:
-  # renovate: datasource=docker depName=docker.io/jellyfin/jellyfin
   repository: docker.io/jellyfin/jellyfin
   tag: "10.11.6"
 
@@ -27,7 +26,7 @@ ingress:
   tls:
     - secretName: jellyfin-tls
       hosts:
-        - {{ $host | quote }}
+        - "jellyfin.{{ requiredEnv "DOMAIN" }}"
 
 # Resource requests for stable performance.
 resources:
