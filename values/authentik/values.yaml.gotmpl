@@ -8,6 +8,7 @@ global:
 authentik:
   # Generated with `openssl rand -hex 32`
   secret_key: {{ requiredEnv "AUTHENTIK_SECRET_KEY" | quote }}
+  default_http_protocol: https
   error_reporting:
     enabled: true
 
@@ -53,10 +54,10 @@ server:
   resources:
     requests:
       cpu: 200m
-      memory: 512Mi
+      memory: 1Gi
     limits:
       cpu: 1000m
-      memory: 1Gi
+      memory: 2Gi
   # Volume pour les données d'Authentik
   volumeMounts:
     - name: authentik-data
@@ -74,10 +75,10 @@ worker:
   resources:
     requests:
       cpu: 100m
-      memory: 256Mi
+      memory: 1Gi
     limits:
       cpu: 500m
-      memory: 512Mi
+      memory: 2Gi
 
   volumeMounts:
     - name: authentik-data
@@ -97,4 +98,4 @@ redis:
 
 # Monitoring
 monitoring:
-  enabled: false
+  enabled: true

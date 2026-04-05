@@ -36,20 +36,22 @@ persistence:
   storageClass: local-config
   size: 128Mi
 
-# Fix permissions sur acme.json (requis par Let's Encrypt)
+# Configuration du déploiement
 deployment:
-  strategy:
-    type: Recreate
   initContainers:
-  - name: volume-permissions
-    image: busybox:1.37.0
-    command:
-    - "sh"
-    - "-c"
-    - "touch /data/acme.json && chmod -v 600 /data/acme.json && chown 65532:65532 /data/acme.json"
-    volumeMounts:
-    - name: data
-      mountPath: /data
+    - name: volume-permissions
+      image: busybox:1.37.0
+      command:
+        - "sh"
+        - "-c"
+        - "touch /data/acme.json && chmod -v 600 /data/acme.json && chown 65532:65532 /data/acme.json"
+      volumeMounts:
+        - name: data
+          mountPath: /data
+
+# Stratégie de mise à jour pour éviter le conflit sur hostPort (port 80/443)
+updateStrategy:
+  type: Recreate
 
 podSecurityContext:
   fsGroup: 65532
@@ -71,10 +73,10 @@ certificatesResolvers:
         # Cloudflare a parfois besoin d'un peu de temps pour propager le TXT
         delayBeforeCheck: 10
         resolvers:
-        - "1.1.1.1"
-        - "1.0.0.1"
-        - "2606:4700:4700::1111"
-        - "2606:4700:4700::1001"
+          - "1.1.1.1"
+          - "1.0.0.1"
+          - "2606:4700:4700::1111"
+          - "2606:4700:4700::1001"
 
 resources:
   requests:
@@ -82,27 +84,24 @@ resources:
     memory: 128Mi
   limits:
     cpu: 500m
-    memory: 256Mi
+    memory: 1Gi
 
 # Traefik Providers
 providers:
   kubernetesCRD:
     enabled: true
-    allowExternalNameServices: true # Fallback
+    allowExternalNameServices: true
   kubernetesIngress:
     enabled: true
-    allowExternalNameServices: true # Fallback
-  file:
-    directory: /etc/traefik/external/
-    watch: true
+    allowExternalNameServices: true
 
-# Rajout du ConfigMap externe dans le déploiement Traefik
-deployment:
-  additionalVolumes:
-    - name: external-services
-      configMap:
-        name: traefik-external-services
-  additionalVolumeMounts:
-    - name: external-services
-      mountPath: /etc/traefik/external/
-      readOnly: true
+# Arguments Traefik pour le File Provider
+additionalArguments:
+  - "--providers.file.filename=/etc/traefik/external/services.yaml"
+  - "--providers.file.watch=true"
+
+# Montage du ConfigMap externe via le helper "volumes" du chart
+volumes:
+  - name: traefik-external-services
+    mountPath: "/etc/traefik/external/"
+    type: configMap

@@ -3,29 +3,44 @@
 
 {{- $config := (readFile "external-services-list.yaml" | fromYaml) -}}
 
-{{- $traefikConfig := dict "http" (dict "routers" (dict) "services" (dict)) "tcp" (dict "routers" (dict) "services" (dict)) -}}
+{{- $httpRouters := dict -}}
+{{- $httpServices := dict -}}
+{{- $tcpRouters := dict -}}
+{{- $tcpServices := dict -}}
 
 {{- range $config.services }}
   {{- $name := .host -}}
   {{- $domain := printf "%s.%s" .host (requiredEnv "DOMAIN") -}}
+  {{- $port := (int (default 0 .port)) -}}
   
   {{- if eq (int .layer) 7 }}
     {{- /* Layer 7 - HTTP */ -}}
     {{- $router := dict "rule" (printf "Host(`%s`)" $domain) "service" $name "entryPoints" (list "websecure") -}}
     {{- $_ := set $router "tls" (dict "certResolver" "letsencrypt") -}}
-    {{- $_ := set $traefikConfig.http.routers $name $router -}}
+    {{- $_ := set $httpRouters $name $router -}}
     
-    {{- $svc := dict "loadBalancer" (dict "servers" (list (dict "url" (printf "https://%s" .destination)))) -}}
-    {{- $_ := set $traefikConfig.http.services $name $svc -}}
+    {{- /* Détecte le schéma (http/https) et le port */ -}}
+    {{- $scheme := "http" -}}
+    {{- if eq $port 443 }}{{ $scheme = "https" }}{{ end -}}
+    {{- if (index . "insecure") }}{{ $scheme = "http" }}{{ end -}}
+    
+    {{- $dest := .destination -}}
+    {{- if and $port (ne $port 80) (ne $port 443) -}}
+      {{- $dest = printf "%s:%d" .destination $port -}}
+    {{- end -}}
+    
+    {{- $svc := dict "loadBalancer" (dict "servers" (list (dict "url" (printf "%s://%s" $scheme $dest)))) -}}
+    {{- $_ := set $httpServices $name $svc -}}
     
   {{- else if eq (int .layer) 4 }}
     {{- /* Layer 4 - TCP (TLS Passthrough) */ -}}
     {{- $router := dict "rule" (printf "HostSNI(`%s`)" $domain) "service" $name "entryPoints" (list "websecure") -}}
     {{- $_ := set $router "tls" (dict "passthrough" true) -}}
-    {{- $_ := set $traefikConfig.tcp.routers $name $router -}}
+    {{- $_ := set $tcpRouters $name $router -}}
     
-    {{- $svc := dict "loadBalancer" (dict "servers" (list (dict "address" (printf "%s:%d" .destination (int (default 443 .port)))))) -}}
-    {{- $_ := set $traefikConfig.tcp.services $name $svc -}}
+    {{- $tcpPort := 443 -}}{{- if $port }}{{ $tcpPort = $port }}{{ end -}}
+    {{- $svc := dict "loadBalancer" (dict "servers" (list (dict "address" (printf "%s:%d" .destination $tcpPort)))) -}}
+    {{- $_ := set $tcpServices $name $svc -}}
   {{- end }}
 {{- end }}
 
@@ -37,4 +52,17 @@ resources:
       namespace: traefik
     data:
       services.yaml: |
-{{ $traefikConfig | toYaml | indent 8 }}
+{{- if $httpRouters }}
+        http:
+          routers:
+{{ $httpRouters | toYaml | indent 12 }}
+          services:
+{{ $httpServices | toYaml | indent 12 }}
+{{- end }}
+{{- if $tcpRouters }}
+        tcp:
+          routers:
+{{ $tcpRouters | toYaml | indent 12 }}
+          services:
+{{ $tcpServices | toYaml | indent 12 }}
+{{- end }}

@@ -6,10 +6,14 @@
 
 services:
 - host: nas
-  destination: nas.thivillon.org
+  destination: 192.168.1.63
   layer: 4
   port: 443
 - host: mail
-  destination: mail.thivillon.org
+  destination: 192.168.1.9
   layer: 4
   port: 443
+- host: haos
+  destination: 192.168.1.42
+  layer: 7
+  port: 8123
