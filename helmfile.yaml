@@ -38,3 +38,7 @@ helmfiles:
 
 - path: releases/media/qbittorrent.yaml.gotmpl
 - path: releases/argocd/argocd.yaml.gotmpl
+
+# Layer 7 — Trek namespace
+- path: releases/trek/secrets.yaml.gotmpl
+- path: releases/trek/trek.yaml.gotmpl
