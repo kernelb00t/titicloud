@@ -37,3 +37,4 @@ helmfiles:
 - path: releases/media/seerr.yaml.gotmpl
 
 - path: releases/media/qbittorrent.yaml.gotmpl
+- path: releases/argocd/argocd.yaml.gotmpl
