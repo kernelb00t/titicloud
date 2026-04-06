@@ -37,3 +37,7 @@ helmfiles:
 - path: releases/media/seerr.yaml.gotmpl
 
 - path: releases/media/qbittorrent.yaml.gotmpl
+
+# Layer 7 — Trek namespace
+- path: releases/trek/secrets.yaml.gotmpl
+- path: releases/trek/trek.yaml.gotmpl
