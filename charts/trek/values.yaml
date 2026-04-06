@@ -76,7 +76,7 @@ secretEnv:
   OIDC_CLIENT_SECRET: ""
 
 # If true, a random ENCRYPTION_KEY is generated at install and preserved across upgrades
-generateEncryptionKey: false
+generateEncryptionKey: true
 
 # If set, use an existing Kubernetes secret that contains ENCRYPTION_KEY
 existingSecret: ""
