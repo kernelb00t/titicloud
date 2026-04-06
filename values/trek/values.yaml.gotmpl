@@ -1,0 +1,52 @@
+# TREK configuration — chart local charts/trek
+# Docs: https://github.com/mauriceboe/TREK
+
+image:
+  repository: mauriceboe/trek
+  # renovate: datasource=github-releases depName=mauriceboe/TREK
+  tag: "2.9.8"
+
+env:
+  NODE_ENV: production
+  PORT: "3000"
+  TZ: "UTC"
+  APP_URL: "https://trek.{{ requiredEnv "DOMAIN" }}"
+  ALLOWED_ORIGINS: "https://trek.{{ requiredEnv "DOMAIN" }}"
+  TRUST_PROXY: "1"
+  COOKIE_SECURE: "true"
+  # Authentik OIDC — créer un provider OAuth2/OIDC dans Authentik (slug: trek)
+  OIDC_ISSUER: "https://auth.{{ requiredEnv "DOMAIN" }}/application/o/trek/"
+  OIDC_CLIENT_ID: "trek"
+  OIDC_DISPLAY_NAME: "Authentik"
+  OIDC_DISCOVERY_URL: "https://auth.{{ requiredEnv "DOMAIN" }}/application/o/trek/.well-known/openid-configuration"
+  OIDC_SCOPE: "openid email profile"
+
+existingSecret: trek-secrets
+existingSecretKey: ENCRYPTION_KEY
+
+persistence:
+  enabled: true
+  storageClass: local-config
+  data:
+    size: 1Gi
+  uploads:
+    size: 5Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+ingress:
+  enabled: true
+  className: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: "letsencrypt"
+  hosts:
+    - host: "trek.{{ requiredEnv "DOMAIN" }}"
+      paths:
+        - /
