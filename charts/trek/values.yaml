@@ -1,6 +1,6 @@
 image:
   repository: mauriceboe/trek
-  tag: "2.9.11"
+  tag: "2.9.12"
   pullPolicy: IfNotPresent
 
 # Optional image pull secrets for private registries
