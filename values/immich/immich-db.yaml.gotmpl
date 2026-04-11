@@ -8,6 +8,10 @@ cluster:
   # renovate: datasource=docker depName=ghcr.io/tensorchord/cloudnative-vectorchord
   imageName: "ghcr.io/tensorchord/cloudnative-vectorchord:pg16-v0.4.3"
 
+  postgresql:
+    shared_preload_libraries:
+      - "vchord.so"
+
   storage:
     size: 10Gi
     storageClass: local-config
