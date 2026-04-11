@@ -6,7 +6,7 @@ cluster:
 
   # PostgreSQL avec support pgvector — requis par Immich depuis v1.106+
   # renovate: datasource=docker depName=ghcr.io/tensorchord/cloudnative-vectorchord
-  imageName: "ghcr.io/tensorchord/cloudnative-vectorchord:pg16-v0.4.3"
+  imageName: "ghcr.io/tensorchord/cloudnative-vectorchord:16-0.4.3"
 
   postgresql:
     shared_preload_libraries:
@@ -31,7 +31,6 @@ cluster:
     secret:
       name: immich-db-secret
     postInitSQL:
-      - CREATE EXTENSION IF NOT EXISTS "vector" CASCADE;
       - CREATE EXTENSION IF NOT EXISTS "vectorchord" CASCADE;
 
 backups:

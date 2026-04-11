@@ -9,13 +9,6 @@ releases:
     values:
       - ../../values/immich/storage.yaml.gotmpl
 
-  - name: immich-db
-    namespace: immich
-    chart: cnpg/cluster
-    version: "0.6.0"
-    values:
-      - ../../values/immich/immich-db.yaml.gotmpl
-
   - name: immich
     namespace: immich
     chart: immich/immich

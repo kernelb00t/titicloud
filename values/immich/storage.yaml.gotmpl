@@ -27,7 +27,7 @@ resources:
         - nodiratime
       nfs:
         server: {{ requiredEnv "NFS_SERVER" | quote }}
-        path: {{ env "NFS_IMMICH_PATH" | default "/volume1/immich" | quote }}
+        path: {{ requiredEnv "NFS_IMMICH_PATH" | quote }}
 
   # Claim pour la bibliothèque de photos Immich
   - apiVersion: v1
