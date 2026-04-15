@@ -2,9 +2,9 @@ bases:
   - ../../bases/default.yaml.gotmpl
 
 releases:
-  - name: immich-db
+  - name: immich-db-16
     namespace: immich
     chart: cnpg/cluster
     version: "0.6.0"
     values:
-      - ../../values/immich/immich-db.yaml.gotmpl
+      - ../../values/immich/immich-db-16.yaml.gotmpl

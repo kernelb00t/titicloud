@@ -8,10 +8,10 @@ controllers:
       main:
         image:
           # renovate: datasource=github-releases depName=immich-app/immich
-          tag: "v2.6.3"
+          tag: "v2.7.4"
         env:
           # Connexion à la base de données PostgreSQL (CNPG)
-          DB_HOSTNAME: "immich-db-cluster-rw.immich.svc.cluster.local"
+          DB_HOSTNAME: "immich-db-16-cluster-rw.immich.svc.cluster.local"
           DB_DATABASE_NAME: "immich"
           DB_USERNAME: "immich"
           DB_PASSWORD:
@@ -64,7 +64,7 @@ server:
         traefik.ingress.kubernetes.io/router.tls: "true"
         traefik.ingress.kubernetes.io/router.tls.certresolver: "letsencrypt"
       hosts:
-        - host: "photos.{{ requiredEnv "DOMAIN" }}"
+        - host: "photo.{{ requiredEnv "DOMAIN" }}"
           paths:
             - path: /
               service:
@@ -81,8 +81,7 @@ machine-learning:
         main:
           image:
             repository: ghcr.io/immich-app/immich-machine-learning
-            # renovate: datasource=github-releases depName=immich-app/immich
-            tag: "v2.6.3-openvino"
+            tag: "v2.7.4-openvino"
           resources:
             requests:
               cpu: 100m
