@@ -80,8 +80,9 @@ machine-learning:
       containers:
         main:
           image:
+            # renovate: datasource=github-releases depName=immich-app/immich
             repository: ghcr.io/immich-app/immich-machine-learning
-            tag: "v2.7.4-openvino"
+            tag: "v2.7.5-openvino"
           resources:
             requests:
               cpu: 100m
