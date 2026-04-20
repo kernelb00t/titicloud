@@ -1,3 +1,0 @@
-[submodule "charts/paperless"]
-	path = charts/paperless
-	url = https://github.com/kernelb00t/paperless-ngx-helm/

@@ -4,7 +4,8 @@ bases:
 releases:
   - name: paperless
     namespace: paperless
-    chart: ../../charts/paperless/paperless-ngx
+    chart: oci://ghcr.io/kernelb00t/paperless-ngx
+    version: "2.20.14-0"
     values:
       - ../../values/paperless/paperless.yaml.gotmpl
 
