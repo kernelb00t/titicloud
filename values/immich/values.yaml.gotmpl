@@ -85,10 +85,10 @@ machine-learning:
             tag: "v2.7.5-openvino"
           resources:
             requests:
-              cpu: 100m
+              cpu: 1000m
               memory: 512Mi
             limits:
-              memory: 4Gi
+              memory: 16Gi
   # Accès au GPU Intel via /dev/dri pour OpenVINO
   defaultPodOptions:
     securityContext:
