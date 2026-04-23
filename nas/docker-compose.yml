@@ -8,7 +8,7 @@ services:
     # but bridge with port mapping might be cleaner. Let's use port mapping.
     ports:
       - "100.114.35.5:${GARAGE_API_PORT:?GARAGE_API_PORT is required}:3900" # S3 API
-      - "fd7a:115c:a1e0::b101:2306:${GARAGE_API_PORT:?GARAGE_API_PORT is required}:3900" # IPv6 access
+      - "[fd7a:115c:a1e0::b101:2306]:${GARAGE_API_PORT:?GARAGE_API_PORT is required}:3900" # IPv6 access
     environment:
       # Inject the RPC secret via environment variable for security
       - GARAGE_RPC_SECRET=${GARAGE_RPC_SECRET:?GARAGE_RPC_SECRET is required}
@@ -25,7 +25,7 @@ services:
       - ./garage.toml:/etc/garage.toml:ro
     ports:
       - 100.114.35.5:3909:3909
-      - "fd7a:115c:a1e0::b101:2306:3909:3909" # IPv6 access
+      - "[fd7a:115c:a1e0::b101:2306]:3909:3909" # IPv6 access
     environment:
       API_BASE_URL: "http://garage:3903"
       S3_ENDPOINT_URL: "http://garage:3900"
