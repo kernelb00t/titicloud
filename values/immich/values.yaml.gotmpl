@@ -10,6 +10,8 @@ controllers:
           # renovate: datasource=github-releases depName=immich-app/immich
           tag: "v2.7.5"
         env:
+          # IMMICH_HOST: "0.0.0.0" force l'écoute sur toutes les interfaces (évite le bind [::1] qui fait échouer les probes K8s)
+          IMMICH_HOST: "0.0.0.0"
           # Connexion à la base de données PostgreSQL (CNPG)
           DB_HOSTNAME: "immich-db-16-cluster-rw.immich.svc.cluster.local"
           DB_DATABASE_NAME: "immich"
@@ -40,8 +42,7 @@ server:
       strategy: Recreate
       containers:
         main:
-          securityContext:
-            privileged: true
+          securityContext: {}
           resources:
             requests:
               cpu: 100m
@@ -76,6 +77,11 @@ server:
 # Composant Microservices (Transcodage vidéo)
 microservices:
   enabled: true
+  controllers:
+    main:
+      containers:
+        main:
+          securityContext: {}
   # Accès au GPU Intel (VA-API) pour le transcodage vidéo
   defaultPodOptions:
     securityContext:
@@ -95,8 +101,7 @@ machine-learning:
     main:
       containers:
         main:
-          securityContext:
-            privileged: true
+          securityContext: {}
           image:
             # renovate: datasource=github-releases depName=immich-app/immich
             repository: ghcr.io/immich-app/immich-machine-learning
