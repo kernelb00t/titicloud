@@ -40,16 +40,18 @@ server:
       strategy: Recreate
       containers:
         main:
+          securityContext:
+            privileged: true
           resources:
             requests:
               cpu: 100m
               memory: 512Mi
             limits:
-              memory: 4Gi
+              memory: 8Gi
   # Accès au GPU Intel (VA-API) pour le transcodage vidéo
   defaultPodOptions:
     securityContext:
-      supplementalGroups: [44, 105]
+      supplementalGroups: [44, 991]
   persistence:
     dri:
       type: hostPath
@@ -71,6 +73,20 @@ server:
                 identifier: main
                 port: http
 
+# Composant Microservices (Transcodage vidéo)
+microservices:
+  enabled: true
+  # Accès au GPU Intel (VA-API) pour le transcodage vidéo
+  defaultPodOptions:
+    securityContext:
+      supplementalGroups: [44, 991]
+  persistence:
+    dri:
+      type: hostPath
+      hostPath: /dev/dri
+      globalMounts:
+        - path: /dev/dri
+
 # Composant Machine Learning (CLIP, reconnaissance faciale)
 # Utilise l'image OpenVINO pour l'accélération via l'iGPU Intel i5 1340P
 machine-learning:
@@ -79,6 +95,8 @@ machine-learning:
     main:
       containers:
         main:
+          securityContext:
+            privileged: true
           image:
             # renovate: datasource=github-releases depName=immich-app/immich
             repository: ghcr.io/immich-app/immich-machine-learning
@@ -88,11 +106,11 @@ machine-learning:
               cpu: 1000m
               memory: 512Mi
             limits:
-              memory: 16Gi
+              memory: 12Gi
   # Accès au GPU Intel via /dev/dri pour OpenVINO
   defaultPodOptions:
     securityContext:
-      supplementalGroups: [44, 105]
+      supplementalGroups: [44, 991]
   persistence:
     cache:
       enabled: true
