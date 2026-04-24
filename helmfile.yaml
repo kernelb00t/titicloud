@@ -9,6 +9,9 @@ helmfiles:
 - path: releases/infra/traefik.yaml.gotmpl
 - path: releases/infra/external-services.yaml.gotmpl
 - path: releases/infra/velero.yaml.gotmpl
+- path: releases/infra/nfd.yaml.gotmpl
+- path: releases/infra/intel-operator.yaml.gotmpl
+- path: releases/infra/intel-gpu-plugin.yaml.gotmpl
 
 # Layer 2 — Auth namespace
 - path: releases/auth/secrets.yaml.gotmpl
