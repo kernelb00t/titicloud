@@ -6,7 +6,7 @@ controllers:
         image:
           # renovate: datasource=github-releases depName=dani-garcia/vaultwarden
           repository: ghcr.io/dani-garcia/vaultwarden
-          tag: "1.35.7"
+          tag: "1.35.8"
         env:
           ADMIN_TOKEN: {{ requiredEnv "VAULTWARDEN_ADMIN_TOKEN" | quote }}
           DOMAIN: "https://vault.{{ requiredEnv "DOMAIN" }}"
