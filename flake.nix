@@ -40,6 +40,8 @@
           stern
           velero
           python3
+          kubeseal
+          argocd
         ];
       };
     });
