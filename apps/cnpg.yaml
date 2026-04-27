@@ -28,3 +28,32 @@ spec:
     syncOptions:
     - CreateNamespace=true
     - ServerSideApply=true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: barman-cloud-plugin
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://cloudnative-pg.github.io/charts'
+    chart: plugin-barman-cloud
+    targetRevision: 0.6.0
+    helm:
+      values: |
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: cnpg-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
