@@ -3,7 +3,6 @@ bases:
 ---
 helmfiles:
 # Layer 1 — Operators et infra transverse
-- path: releases/infra/cert-manager.yaml.gotmpl
 - path: releases/infra/local-config-storageclass.yaml.gotmpl
 - path: releases/infra/cnpg.yaml.gotmpl
 - path: releases/infra/external-services.yaml.gotmpl
