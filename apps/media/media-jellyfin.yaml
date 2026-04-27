@@ -38,8 +38,10 @@ spec:
           requests:
             cpu: 500m
             memory: 512Mi
+            gpu.intel.com/i915: 1
           limits:
             memory: 6Gi
+            gpu.intel.com/i915: 1
 
         strategy:
           type: Recreate
@@ -57,21 +59,6 @@ spec:
             type: pvc
             existingClaim: jellyfin-cache
             mountPath: /cache
-
-        podSecurityContext:
-          supplementalGroups: [993, 44]
-
-        securityContext:
-          privileged: true
-
-        volumes:
-          - name: hwa
-            hostPath:
-              path: /dev/dri
-
-        volumeMounts:
-          - name: hwa
-            mountPath: /dev/dri
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: media
