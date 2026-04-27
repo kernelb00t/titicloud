@@ -61,10 +61,13 @@
       "commitMessagePrefix": "chore(actions):"
     }
   ],
+  "argocd": {
+    "managerFilePatterns": ["/(^|/)apps/.+\\.ya?ml$/"]
+  },
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": ["/(^|/)apps/.+\\.ya?ml$"],
+      "managerFilePatterns": ["/(^|/)apps/.+\\.ya?ml$/"],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)(?: versioning=(?<versioning>.*?))?(?: changelogUrl=(?<changelogUrl>.*?))?\\s+[\\s\\S]*?tag:\\s+\"(?<currentValue>.*?)\""
       ]
