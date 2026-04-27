@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: node-feature-discovery
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://kubernetes-sigs.github.io/node-feature-discovery/charts'
+    chart: node-feature-discovery
+    targetRevision: 0.15.2
+    helm:
+      values: |
+        master:
+          extraArgs:
+            - "-label-whitelist=intel.gpu"
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: node-feature-discovery
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: intel-operator
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://intel.github.io/helm-charts'
+    chart: intel-device-plugins-operator
+    targetRevision: 0.29.0
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: intel-device-plugins-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
