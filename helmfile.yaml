@@ -20,9 +20,7 @@ helmfiles:
 - path: releases/media/qbittorrent.yaml.gotmpl
 - path: releases/paperless/paperless.yaml.gotmpl
 
-# Layer 7 — Trek namespace
-- path: releases/trek/secrets.yaml.gotmpl
-- path: releases/trek/trek.yaml.gotmpl
+
 
 # Layer 8 — Immich namespace
 - path: releases/immich/secrets.yaml.gotmpl
