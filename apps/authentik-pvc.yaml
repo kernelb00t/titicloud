@@ -10,3 +10,4 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: local-config
+  volumeName: pvc-eefc2390-4c7f-40df-bd96-f1b8bad53b24
