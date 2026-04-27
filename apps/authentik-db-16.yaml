@@ -15,6 +15,7 @@ spec:
   primaryUpdateMethod: switchover
   plugins:
   - name: barman-cloud.cloudnative-pg.io
+    enabled: true
     isWALArchiver: true
     parameters:
       barmanObjectName: authentik-s3-store
@@ -25,7 +26,6 @@ spec:
       owner: authentik
       secret:
         name: authentik-db-secret
-        
       # --- TEMPLATE DE MIGRATION (Pour le futur cluster authentik-db-17) ---
       # import:
       #   type: microservice
@@ -34,12 +34,12 @@ spec:
       #   source:
       #     externalCluster: authentik-db-16
 
-  # externalClusters:
-  #   - name: authentik-db-16
-  #     connectionParameters:
-  #       host: authentik-db-16-rw.auth.svc.cluster.local
-  #       user: postgres
-  #       dbname: postgres
-  #     password:
-  #       name: authentik-db-secret
-  #       key: password
+      # externalClusters:
+      #   - name: authentik-db-16
+      #     connectionParameters:
+      #       host: authentik-db-16-rw.auth.svc.cluster.local
+      #       user: postgres
+      #       dbname: postgres
+      #     password:
+      #       name: authentik-db-secret
+      #       key: password
