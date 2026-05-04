@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://mauriceboe.github.io/TREK'
     chart: trek
-    targetRevision: '3.0.14'
+    targetRevision: '3.0.15'
     helm:
       values: |
         fullnameOverride: trek
