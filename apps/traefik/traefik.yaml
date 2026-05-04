@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://helm.traefik.io/traefik'
     chart: traefik
-    targetRevision: 39.0.8
+    targetRevision: 39.0.9
     helm:
       values: |
         # Désactive le Service LoadBalancer par défaut de k3s — on utilise hostPort
